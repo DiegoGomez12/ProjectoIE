@@ -38,7 +38,6 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    /* Hide scrollbars for clean app feel */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -46,9 +45,16 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2s infinite ease-in-out;
+    }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-800 min-h-screen flex items-center justify-center p-0 md:p-6 antialiased">
+<body class="bg-slate-900 text-slate-800 min-h-screen flex items-center justify-center p-0 md:p-6 antialiased selection:bg-emerald-500 selection:text-white">
 
   <!-- Desktop Presentation Wrapper: Shows Mockup + QR Info on Desktop, full screen on Mobile -->
   <div class="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8">
@@ -135,8 +141,8 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <!-- Streak Indicator -->
-          <div class="flex items-center space-x-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
+          <!-- Streak Indicator with interactive tip -->
+          <div onclick="showToast('🔥 ¡Llevas 4 días comiendo balanceado sin romper tu presupuesto!')" class="cursor-pointer flex items-center space-x-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm active:scale-95 transition">
             <span>🔥</span>
             <span>4 días</span>
           </div>
@@ -146,6 +152,14 @@
           </button>
         </div>
       </header>
+
+      <!-- FLOATING TOAST NOTIFICATION -->
+      <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2">
+        <div class="bg-slate-900/90 backdrop-blur-md text-white text-xs px-4 py-2.5 rounded-2xl shadow-xl flex items-center space-x-2 border border-slate-700/60 max-w-[340px]">
+          <span id="toastIcon">✨</span>
+          <span id="toastMessage" class="font-medium">Notificación</span>
+        </div>
+      </div>
 
       <!-- MAIN SCROLLABLE APP BODY -->
       <main class="flex-1 overflow-y-auto no-scrollbar pb-24 px-4 pt-4 bg-slate-50/60">
@@ -158,25 +172,39 @@
             
             <div class="flex items-start justify-between">
               <div>
-                <p class="text-xs uppercase tracking-wider text-emerald-200 font-semibold">Miércoles, 18 de Nov</p>
+                <p class="text-xs uppercase tracking-wider text-emerald-200 font-semibold" id="currentDateLabel">Miércoles, 18 de Nov</p>
                 <h3 class="text-xl font-bold mt-0.5">¡Hola, Alfonso! 👋</h3>
                 <p class="text-xs text-emerald-100/90 mt-1 max-w-[240px]">
-                  Tienes <span class="font-semibold text-white">2 comidas prácticas</span> listas para hoy antes de tus clases.
+                  Tienes <span class="font-semibold text-white" id="todayMealsCountText">3 comidas prácticas</span> listas para hoy antes de tus clases.
                 </p>
               </div>
               <div class="bg-white/20 backdrop-blur-md rounded-2xl p-2.5 text-center">
-                <span class="block text-xs text-emerald-100 font-medium">Meta Hoy</span>
-                <span class="text-base font-extrabold text-white">Energía</span>
+                <span class="block text-[10px] text-emerald-100 font-medium">Meta Hoy</span>
+                <span class="text-sm font-extrabold text-white">Energía</span>
+              </div>
+            </div>
+
+            <!-- Energy & Meals Daily Progress Bar -->
+            <div class="mt-4 pt-3 border-t border-white/15 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="flex items-center gap-1.5 text-emerald-100">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                  Progreso del día:
+                </span>
+                <span id="mealsProgressLabel" class="font-bold text-white">1 de 3 comidas hechas</span>
+              </div>
+              <div class="w-full h-2 bg-black/20 rounded-full overflow-hidden">
+                <div id="mealsProgressBar" class="h-full bg-emerald-300 rounded-full transition-all duration-500" style="width: 33%"></div>
               </div>
             </div>
 
             <!-- Quick Budget Mini-Status -->
-            <div class="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-xs">
+            <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-white/10">
               <span class="flex items-center gap-1.5 text-emerald-100">
                 <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
                 Presupuesto Semanal:
               </span>
-              <span class="font-bold text-white bg-black/20 px-2 py-0.5 rounded-lg">$480 / $650 MXN</span>
+              <span id="heroBudgetStatus" class="font-bold text-white bg-black/20 px-2 py-0.5 rounded-lg">$485 / $600 MXN</span>
             </div>
           </div>
 
@@ -194,20 +222,26 @@
             <i data-lucide="chevron-right" class="w-4 h-4 text-amber-700"></i>
           </div>
 
-          <!-- Water Intake Tracker (Interactive) -->
-          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
-                <i data-lucide="droplet" class="w-5 h-5 fill-blue-500"></i>
+          <!-- Water Intake Tracker (Interactive with Glass fill animation) -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                  <i data-lucide="droplet" class="w-5 h-5 fill-blue-500"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Hidratación Diaria</h4>
+                  <p class="text-[11px] text-slate-500"><span id="waterCount" class="font-semibold text-blue-600">5</span> de 8 vasos tomados</p>
+                </div>
               </div>
-              <div>
-                <h4 class="text-xs font-bold text-slate-800">Agua Diaria</h4>
-                <p class="text-[11px] text-slate-500"><span id="waterCount" class="font-semibold text-blue-600">5</span> de 8 vasos tomados</p>
+              <div class="flex items-center space-x-2">
+                <button onclick="updateWater(-1)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 active:scale-90 transition">-</button>
+                <button onclick="updateWater(1)" class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/30 hover:bg-blue-600 active:scale-90 transition">+</button>
               </div>
             </div>
-            <div class="flex items-center space-x-2">
-              <button onclick="updateWater(-1)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 active:scale-95 transition">-</button>
-              <button onclick="updateWater(1)" class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/30 hover:bg-blue-600 active:scale-95 transition">+</button>
+            <!-- Visual Water Glasses Grid -->
+            <div class="grid grid-cols-8 gap-1 pt-1" id="waterGlassesContainer">
+              <!-- Rendered via JS -->
             </div>
           </div>
 
@@ -222,13 +256,16 @@
             </div>
 
             <!-- Meal Card 1: Desayuno -->
-            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
+            <div id="mealCard-desayuno" class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
               <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded-xl bg-amber-100/70 flex items-center justify-center text-xl">
-                  🥞
-                </div>
+                <button onclick="toggleMealDone('desayuno')" title="Marcar como comida" class="meal-check-btn w-7 h-7 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white flex items-center justify-center transition active:scale-90">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
                 <div>
-                  <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Desayuno (7:30 AM)</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Desayuno (7:30 AM)</span>
+                    <span id="badge-desayuno" class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 rounded font-bold">Consumido</span>
+                  </div>
                   <h4 class="text-xs font-bold text-slate-800">Avena Express con Plátano y Crema de Cacahuate</h4>
                   <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
                     <span>⏱️ 5 min</span>
@@ -243,13 +280,16 @@
             </div>
 
             <!-- Meal Card 2: Comida -->
-            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
+            <div id="mealCard-comida" class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
               <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded-xl bg-red-100/70 flex items-center justify-center text-xl">
-                  🥗
-                </div>
+                <button onclick="toggleMealDone('comida')" title="Marcar como comida" class="meal-check-btn w-7 h-7 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
                 <div>
-                  <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Comida (2:00 PM)</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Comida (2:00 PM)</span>
+                    <span id="badge-comida" class="hidden text-[9px] bg-emerald-100 text-emerald-800 px-1.5 rounded font-bold">Consumido</span>
+                  </div>
                   <h4 class="text-xs font-bold text-slate-800">Bowl de Atún, Arroz y Aguacate</h4>
                   <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
                     <span>⏱️ 12 min</span>
@@ -264,13 +304,16 @@
             </div>
 
             <!-- Meal Card 3: Cena -->
-            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
+            <div id="mealCard-cena" class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
               <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded-xl bg-emerald-100/70 flex items-center justify-center text-xl">
-                  🌮
-                </div>
+                <button onclick="toggleMealDone('cena')" title="Marcar como comida" class="meal-check-btn w-7 h-7 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
                 <div>
-                  <span class="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Cena (8:30 PM)</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Cena (8:30 PM)</span>
+                    <span id="badge-cena" class="hidden text-[9px] bg-emerald-100 text-emerald-800 px-1.5 rounded font-bold">Consumido</span>
+                  </div>
                   <h4 class="text-xs font-bold text-slate-800">Quesadillas en Comal con Panela y Frijol</h4>
                   <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
                     <span>⏱️ 10 min</span>
@@ -291,70 +334,45 @@
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-base font-bold text-slate-800">Menú Semanal Flexible</h3>
-              <p class="text-xs text-slate-500">Adaptado a $600/sem y porciones estudiantiles</p>
+              <p class="text-xs text-slate-500">Adaptado a <span id="menuBudgetSubtitle">$600/sem</span> y porciones estudiantiles</p>
             </div>
-            <button onclick="randomizeMenu()" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 hover:bg-emerald-100 transition">
+            <button onclick="randomizeCurrentDayMenu()" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 hover:bg-emerald-100 active:scale-95 transition">
               <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
-              Regenerar
+              Intercambiar
             </button>
           </div>
 
-          <!-- Day Selector Carousel -->
-          <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
-            <button onclick="selectDay(this, 'lun')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+          <!-- Day Selector Carousel (Active click changes real day's meals) -->
+          <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1" id="daySelectorContainer">
+            <button onclick="changeDayView('lun', this)" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
               <span class="block text-[10px] text-slate-400 font-medium">LUN</span>
               16
             </button>
-            <button onclick="selectDay(this, 'mar')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+            <button onclick="changeDayView('mar', this)" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
               <span class="block text-[10px] text-slate-400 font-medium">MAR</span>
               17
             </button>
-            <button onclick="selectDay(this, 'mie')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-emerald-600 text-white shadow-md shadow-emerald-600/25 text-xs font-bold">
+            <button onclick="changeDayView('mie', this)" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-emerald-600 text-white shadow-md shadow-emerald-600/25 text-xs font-bold">
               <span class="block text-[10px] text-emerald-100 font-medium">MIÉ</span>
               18
             </button>
-            <button onclick="selectDay(this, 'jue')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+            <button onclick="changeDayView('jue', this)" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
               <span class="block text-[10px] text-slate-400 font-medium">JUE</span>
               19
             </button>
-            <button onclick="selectDay(this, 'vie')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+            <button onclick="changeDayView('vie', this)" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
               <span class="block text-[10px] text-slate-400 font-medium">VIE</span>
               20
             </button>
-            <button onclick="selectDay(this, 'sab')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+            <button onclick="changeDayView('sab', this)" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
               <span class="block text-[10px] text-slate-400 font-medium">SÁB</span>
               21
             </button>
           </div>
 
-          <!-- Weekly Meal Cards Details -->
+          <!-- Weekly Meal Cards Details (Dynamically updated per day) -->
           <div id="weeklyMealsContainer" class="space-y-3">
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-amber-600 uppercase">☀️ Desayuno</span>
-                <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">8 min • $24 MXN</span>
-              </div>
-              <h4 class="font-bold text-slate-800 text-sm">Huevos a la Mexicana con Frijoles Enteros</h4>
-              <p class="text-xs text-slate-500">2 huevos + 1/2 jitomate + cebolla + 1/2 taza frijol de olla. Acompañado de 2 tortillas de maíz.</p>
-            </div>
-
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-emerald-600 uppercase">🍲 Comida</span>
-                <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">15 min • $42 MXN</span>
-              </div>
-              <h4 class="font-bold text-slate-800 text-sm">Fajitas de Pollo Express con Pimientos</h4>
-              <p class="text-xs text-slate-500">120g pechuga de pollo en tiras, pimiento morrón verde y cebolla asada en sartén con 1 taza de arroz.</p>
-            </div>
-
-            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-teal-600 uppercase">🌙 Cena</span>
-                <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">10 min • $28 MXN</span>
-              </div>
-              <h4 class="font-bold text-slate-800 text-sm">Sincronizadas con Panela y Aguacate</h4>
-              <p class="text-xs text-slate-500">Tortilla de maíz o integral con queso panela asado, rebanadas de aguacate y salsa casera.</p>
-            </div>
+            <!-- Populated via renderWeeklyDay() -->
           </div>
 
           <!-- Meal Prep Tip Card -->
@@ -391,79 +409,67 @@
 
             <div class="flex flex-wrap gap-2" id="ingredientsPills">
               <!-- Pill items -->
-              <button onclick="toggleIngredient(this)" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'huevos')" data-ing="huevos" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
                 🥚 Huevos
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'atun')" data-ing="atun" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
                 🐟 Lata de Atún
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'tortillas')" data-ing="tortillas" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
                 🌽 Tortillas
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'panela')" data-ing="panela" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
                 🧀 Queso Panela
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'cebolla')" data-ing="cebolla" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
                 🧅 Cebolla
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'jitomate')" data-ing="jitomate" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
                 🍅 Jitomate
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'arroz')" data-ing="arroz" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
                 🍚 Arroz cocido
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'frijoles')" data-ing="frijoles" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
                 🫘 Frijoles
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'aguacate')" data-ing="aguacate" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
                 🥑 Aguacate
               </button>
-              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+              <button onclick="toggleIngredient(this, 'avena')" data-ing="avena" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
                 🥛 Leche / Avena
               </button>
             </div>
 
-            <button onclick="generateRefriRecipe()" class="w-full py-3 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/30 hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center gap-2">
+            <!-- Custom Ingredient Adder -->
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
+              <input type="text" id="customIngInput" placeholder="+ Agregar otro ingrediente (ej. zanahoria)" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+              <button onclick="addCustomIngredient()" class="bg-slate-100 text-slate-700 text-xs px-3 py-2 rounded-xl font-bold hover:bg-slate-200 active:scale-95 transition">Añadir</button>
+            </div>
+
+            <button id="btnGenerateRefri" onclick="generateRefriRecipe()" class="w-full py-3 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/30 hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center gap-2">
               <i data-lucide="sparkles" class="w-4 h-4"></i>
-              Generar Receta con estos Ingredientes
+              <span>Generar Receta con estos Ingredientes</span>
             </button>
           </div>
 
           <!-- Generated Recipe Result Container -->
           <div id="refriResult" class="space-y-3">
-            <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <span>🍽️</span> Receta Express Sugerida:
-            </h4>
-
-            <div class="bg-white rounded-2xl p-4 border-2 border-emerald-500/40 shadow-sm space-y-3">
-              <div class="flex items-start justify-between">
-                <div>
-                  <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Compatibilidad: 95%</span>
-                  <h4 class="text-sm font-bold text-slate-800 mt-1">Chilaquiles Fit Express en Sartén</h4>
-                </div>
-                <span class="text-xs font-bold text-slate-600">⚡ 10 min</span>
-              </div>
-
-              <div class="bg-slate-50 rounded-xl p-2.5 text-xs text-slate-600 space-y-1">
-                <p class="font-semibold text-slate-800">Usa:</p>
-                <p>• 3 tortillas cortadas en triángulos doradas en comal (sin freír)</p>
-                <p>• 2 huevos estrellados o revueltos encima</p>
-                <p>• Salsa de tomate casera o envasada que tengas</p>
-              </div>
-
-              <div class="flex items-center justify-between pt-1">
-                <span class="text-xs text-emerald-600 font-bold">Costo extra: $0.00 MXN</span>
-                <button onclick="openRecipeModal('chilaquiles')" class="text-xs font-bold text-emerald-700 underline">Ver pasos detallados</button>
-              </div>
-            </div>
+            <!-- Populated via generateRefriRecipe() -->
           </div>
         </section>
 
         <!-- ================= TAB 4: LISTA DE SÚPER ================= -->
         <section id="tab-super" class="hidden space-y-4">
-          <div>
-            <h3 class="text-base font-bold text-slate-800">Lista de Súper Inteligente</h3>
-            <p class="text-xs text-slate-500">Calculada para tu menú semanal sin comprar de más</p>
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-800">Lista de Súper Inteligente</h3>
+              <p class="text-xs text-slate-500">Calculada para tu menú semanal sin comprar de más</p>
+            </div>
+            <button onclick="copySuperListToClipboard()" title="Copiar lista para WhatsApp" class="text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1 hover:bg-slate-200 active:scale-95 transition">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              Copiar
+            </button>
           </div>
 
           <!-- Budget Slider & Summary -->
@@ -475,90 +481,34 @@
 
             <input type="range" min="300" max="1200" step="50" value="600" id="budgetRange" oninput="updateBudget(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
 
-            <div class="flex items-center justify-between pt-1 text-xs border-t border-slate-100">
-              <span class="text-slate-500">Estimado en lista:</span>
-              <div class="flex items-center gap-1.5">
-                <span id="cartEstimatedTotal" class="font-bold text-slate-800">$485 MXN</span>
-                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">¡Ahorras $115!</span>
+            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center">
+              <div class="bg-slate-50 p-2 rounded-xl">
+                <span class="block text-[10px] text-slate-400">Total Lista</span>
+                <span id="cartEstimatedTotal" class="text-xs font-extrabold text-slate-800">$485 MXN</span>
+              </div>
+              <div class="bg-emerald-50 p-2 rounded-xl">
+                <span class="block text-[10px] text-emerald-600">Comprado</span>
+                <span id="cartSpentTotal" class="text-xs font-extrabold text-emerald-700">$98 MXN</span>
+              </div>
+              <div class="bg-teal-50 p-2 rounded-xl">
+                <span class="block text-[10px] text-teal-600">Ahorro Est.</span>
+                <span id="cartSavingLabel" class="text-xs font-extrabold text-teal-700">+$115 MXN</span>
               </div>
             </div>
           </div>
 
-          <!-- Supermarket Checklist Items -->
-          <div class="space-y-3">
-            <!-- Category 1: Verduras & Frutas -->
-            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
-              <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
-                <span>🥬 Frutas y Verduras</span>
-                <span class="text-[10px] text-slate-400 font-normal">~$120 MXN</span>
-              </h4>
-              <div class="space-y-2 text-xs">
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700 line-through text-slate-400">1 kg Jitomate saladette (~$28)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">1 Manojo de espinacas (~$18)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">Penca de 4 plátanos (~$22)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">2 Cebollas blancas (~$15)</span>
-                </label>
-              </div>
-            </div>
+          <!-- Add custom item to list -->
+          <div class="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex items-center gap-2">
+            <input type="text" id="newGroceryName" placeholder="Agregar producto (ej. Manzanas)" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+            <input type="number" id="newGroceryCost" placeholder="$ MXN" class="w-20 text-xs px-2 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+            <button onclick="addCustomGroceryItem()" class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition">
+              +
+            </button>
+          </div>
 
-            <!-- Category 2: Proteínas Económicas -->
-            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
-              <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
-                <span>🍗 Proteínas & Lácteos</span>
-                <span class="text-[10px] text-slate-400 font-normal">~$240 MXN</span>
-              </h4>
-              <div class="space-y-2 text-xs">
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700 line-through text-slate-400">Cartera 12 huevos (~$46)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">3 Latas de atún en agua (~$54)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">400g Queso Panela (~$65)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">500g Pechuga de pollo en bistec (~$75)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Category 3: Abarrotes & Básicos -->
-            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
-              <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
-                <span>🌾 Alacena Básica</span>
-                <span class="text-[10px] text-slate-400 font-normal">~$125 MXN</span>
-              </h4>
-              <div class="space-y-2 text-xs">
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">1 Bolsa de Avena en hojuelas (~$25)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700">1 kg Arroz blanco (~$26)</span>
-                </label>
-                <label class="flex items-center space-x-2.5 cursor-pointer">
-                  <input type="checkbox" onchange="toggleCartItem(this)" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                  <span class="text-slate-700 line-through text-slate-400">1 kg Tortillas de maíz (~$24)</span>
-                </label>
-              </div>
-            </div>
+          <!-- Supermarket Checklist Items Container -->
+          <div class="space-y-3" id="groceryCategoriesContainer">
+            <!-- Populated via renderGroceryList() -->
           </div>
         </section>
 
@@ -600,22 +550,43 @@
             </div>
           </div>
 
-          <!-- Quick Doubt vs Myth Buster -->
+          <!-- Interactive Nutrition Chat Thread -->
           <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
             <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-slate-800">Consulta Rápida con Nutriólogo</h4>
-              <span class="text-[10px] text-slate-400">Respuesta en &lt;2 hrs</span>
+              <div class="flex items-center space-x-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h4 class="text-xs font-bold text-slate-800">Chat con Nutrióloga</h4>
+              </div>
+              <span class="text-[10px] text-slate-400">En línea</span>
             </div>
-            <p class="text-[11px] text-slate-500">¿Viste un tip en TikTok o tienes dudas con un alimento? Pregúntale a tu nutriólogo sin intermediarios.</p>
-            
-            <div class="flex gap-2">
-              <input type="text" id="nutriQuestionInput" placeholder="Ej. ¿Los carbohidratos en la noche engordan?" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+
+            <!-- Message History Container -->
+            <div id="chatMessagesContainer" class="space-y-2 max-h-56 overflow-y-auto no-scrollbar p-1">
+              <!-- Initial verified message from doctor -->
+              <div class="flex items-start space-x-2">
+                <div class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 text-[10px] flex items-center justify-center font-bold flex-shrink-0">
+                  SR
+                </div>
+                <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed">
+                  Hola Alfonso, revisé tu registro. Vas excelente manteniendo tus horarios de desayuno. ¿Tienes alguna duda de tu menú o viste algún mito que quieras aclarar?
+                </div>
+              </div>
+            </div>
+
+            <!-- Typing indicator -->
+            <div id="typingIndicator" class="hidden flex items-center space-x-1 text-[11px] text-slate-400 pl-8">
+              <span>Dra. Sofía está escribiendo</span>
+              <span class="animate-bounce">•</span>
+              <span class="animate-bounce delay-100">•</span>
+              <span class="animate-bounce delay-200">•</span>
+            </div>
+
+            <!-- Chat input -->
+            <div class="flex gap-2 pt-1 border-t border-slate-100">
+              <input type="text" id="nutriQuestionInput" onkeypress="if(event.key === 'Enter') sendNutriQuestion()" placeholder="Ej. ¿Cenar carbohidratos engorda?" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
               <button onclick="sendNutriQuestion()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center">
                 <i data-lucide="send" class="w-3.5 h-3.5"></i>
               </button>
-            </div>
-            <div id="nutriReplyNotice" class="hidden text-[11px] text-emerald-700 bg-emerald-50 p-2 rounded-lg font-medium">
-              ✅ Pregunta enviada al servicio de nutrición. Te notificaremos al resolverla.
             </div>
           </div>
         </section>
@@ -638,7 +609,7 @@
 
         <!-- Tab 3: Refri (Highlight) -->
         <button onclick="switchTab('refri')" class="nav-item flex flex-col items-center text-slate-400 hover:text-amber-500 transition relative" data-tab="refri">
-          <div class="w-10 h-10 -mt-5 bg-gradient-to-tr from-amber-500 to-orange-400 text-white rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
+          <div class="w-10 h-10 -mt-5 bg-gradient-to-tr from-amber-500 to-orange-400 text-white rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 active:scale-90 transition">
             <i data-lucide="sparkles" class="w-5 h-5"></i>
           </div>
           <span class="text-[10px] font-bold mt-0.5 text-amber-600">Refri</span>
@@ -657,7 +628,7 @@
         </button>
       </nav>
 
-      <!-- RECIPE MODAL POPUP -->
+      <!-- RECIPE MODAL POPUP WITH REAL COOKING TIMER -->
       <div id="recipeModal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition">
         <div class="bg-white w-full rounded-t-3xl sm:rounded-3xl max-h-[85vh] overflow-y-auto no-scrollbar p-5 space-y-4 shadow-2xl animate-in slide-in-from-bottom">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -678,6 +649,22 @@
             </div>
           </div>
 
+          <!-- Working Kitchen Cooking Timer -->
+          <div class="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-3 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] uppercase font-bold text-emerald-800">Temporizador de Cocina</span>
+              <div id="kitchenTimerDisplay" class="text-xl font-mono font-black text-emerald-700">10:00</div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button id="btnTimerToggle" onclick="toggleKitchenTimer()" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition">
+                Iniciar
+              </button>
+              <button onclick="resetKitchenTimer()" class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1.5 rounded-xl font-bold hover:bg-slate-300 active:scale-95 transition">
+                ↺
+              </button>
+            </div>
+          </div>
+
           <div class="space-y-2">
             <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Ingredientes exactos:</h4>
             <ul id="modalIngredients" class="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
@@ -686,27 +673,89 @@
           </div>
 
           <div class="space-y-2">
-            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Preparación (en 3 pasos):</h4>
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Preparación paso a paso:</h4>
             <ol id="modalSteps" class="text-xs text-slate-600 space-y-2 list-decimal list-inside bg-slate-50 p-3 rounded-xl border border-slate-100">
               <!-- Dynamically populated -->
             </ol>
           </div>
 
-          <button onclick="closeRecipeModal()" class="w-full py-3 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/20 hover:bg-emerald-700">
-            ¡Entendido, a cocinar!
-          </button>
+          <div class="flex gap-2 pt-1">
+            <button onclick="addRecipeIngredientsToSuper()" class="w-1/2 py-2.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200 active:scale-95 transition">
+              + Al Súper
+            </button>
+            <button onclick="closeRecipeModal()" class="w-1/2 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-95 transition">
+              ¡A cocinar!
+            </button>
+          </div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Interactive JavaScript Logic -->
+  <!-- Interactive JavaScript Logic with Real App Behaviors -->
   <script>
     // Initialize Lucide Icons
     lucide.createIcons();
 
-    // Tab Navigation
+    // ================= GLOBAL APP STATE (Saved to LocalStorage) =================
+    const APP_STATE = {
+      water: 5,
+      mealsDone: { desayuno: true, comida: false, cena: false },
+      budget: 600,
+      activeDay: 'mie',
+      customIngs: [],
+      chatMessages: [
+        { sender: 'nutri', text: 'Hola Alfonso, revisé tu registro. Vas excelente manteniendo tus horarios de desayuno. ¿Tienes alguna duda de tu menú o viste algún mito que quieras aclarar?' }
+      ],
+      groceryItems: [
+        { id: 'g1', cat: 'veg', name: '1 kg Jitomate saladette', price: 28, checked: true },
+        { id: 'g2', cat: 'veg', name: '1 Manojo de espinacas', price: 18, checked: false },
+        { id: 'g3', cat: 'veg', name: 'Penca de 4 plátanos', price: 22, checked: false },
+        { id: 'g4', cat: 'veg', name: '2 Cebollas blancas', price: 15, checked: false },
+        { id: 'g5', cat: 'pro', name: 'Cartera 12 huevos', price: 46, checked: true },
+        { id: 'g6', cat: 'pro', name: '3 Latas de atún en agua', price: 54, checked: false },
+        { id: 'g7', cat: 'pro', name: '400g Queso Panela', price: 65, checked: false },
+        { id: 'g8', cat: 'pro', name: '500g Pechuga de pollo en bistec', price: 75, checked: false },
+        { id: 'g9', cat: 'pantry', name: '1 Bolsa de Avena en hojuelas', price: 25, checked: false },
+        { id: 'g10', cat: 'pantry', name: '1 kg Arroz blanco', price: 26, checked: false },
+        { id: 'g11', cat: 'pantry', name: '1 kg Tortillas de maíz', price: 24, checked: true }
+      ]
+    };
+
+    // Load state from localStorage if available
+    function loadSavedState() {
+      try {
+        const saved = localStorage.getItem('viveplus_state_v2');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          Object.assign(APP_STATE, parsed);
+        }
+      } catch (e) {
+        console.warn('Could not load localStorage', e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('viveplus_state_v2', JSON.stringify(APP_STATE));
+      } catch (e) {}
+    }
+
+    // ================= TOAST NOTIFICATION SYSTEM =================
+    let toastTimeout = null;
+    function showToast(msg, icon = '✨') {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      document.getElementById('toastIcon').innerText = icon;
+      toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+      }, 2600);
+    }
+
+    // ================= TAB NAVIGATION =================
     function switchTab(tabId) {
       const tabs = ['hoy', 'menu', 'refri', 'super', 'nutri'];
       tabs.forEach(t => {
@@ -717,7 +766,6 @@
       const activeSection = document.getElementById('tab-' + tabId);
       if (activeSection) activeSection.classList.remove('hidden');
 
-      // Update Nav Buttons
       document.querySelectorAll('.nav-item').forEach(btn => {
         const match = btn.getAttribute('data-tab') === tabId;
         if (match) {
@@ -729,38 +777,219 @@
         }
       });
 
-      // Special highlight for refri tab
-      if (tabId === 'refri') {
-        const refriBtn = document.querySelector('[data-tab="refri"]');
-        if (refriBtn) refriBtn.querySelector('span').classList.add('text-amber-600');
-      }
+      if (tabId === 'menu') renderWeeklyDay(APP_STATE.activeDay);
+      if (tabId === 'super') renderGroceryList();
+      if (tabId === 'refri') updateRefriCount();
 
       window.scrollTo(0, 0);
     }
 
-    // Water Tracker
-    let waterCount = 5;
-    function updateWater(delta) {
-      waterCount = Math.max(0, Math.min(12, waterCount + delta));
-      document.getElementById('waterCount').innerText = waterCount;
-    }
-
-    // Grocery Budget Slider
-    function updateBudget(val) {
-      document.getElementById('budgetValueLabel').innerText = '$' + val + ' MXN';
-    }
-
-    function toggleCartItem(cb) {
-      const label = cb.nextElementSibling;
-      if (cb.checked) {
-        label.classList.add('line-through', 'text-slate-400');
-      } else {
-        label.classList.remove('line-through', 'text-slate-400');
+    // ================= WATER TRACKER =================
+    function renderWaterGlasses() {
+      const container = document.getElementById('waterGlassesContainer');
+      container.innerHTML = '';
+      for (let i = 1; i <= 8; i++) {
+        const filled = i <= APP_STATE.water;
+        const glass = document.createElement('div');
+        glass.onclick = () => {
+          APP_STATE.water = i;
+          renderWaterUI();
+          showToast(`💧 ${APP_STATE.water} vasos registrados hoy`);
+        };
+        glass.className = `cursor-pointer h-7 rounded-md transition-all flex items-center justify-center text-[10px] font-bold ${
+          filled ? 'bg-blue-500 text-white shadow-sm' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+        }`;
+        glass.innerText = i;
+        container.appendChild(glass);
       }
     }
 
-    // Fridge Rescue Pills
-    function toggleIngredient(btn) {
+    function renderWaterUI() {
+      document.getElementById('waterCount').innerText = APP_STATE.water;
+      renderWaterGlasses();
+      saveState();
+    }
+
+    function updateWater(delta) {
+      APP_STATE.water = Math.max(0, Math.min(12, APP_STATE.water + delta));
+      renderWaterUI();
+      if (delta > 0) showToast('💧 ¡Vaso de agua agregado!', '🥤');
+    }
+
+    // ================= MEAL COMPLETION TRACKER =================
+    function toggleMealDone(mealKey) {
+      APP_STATE.mealsDone[mealKey] = !APP_STATE.mealsDone[mealKey];
+      updateMealsProgressUI();
+      saveState();
+      if (APP_STATE.mealsDone[mealKey]) {
+        showToast(`🍽️ ¡${mealKey.toUpperCase()} registrado como consumido!`, '✅');
+      }
+    }
+
+    function updateMealsProgressUI() {
+      const keys = ['desayuno', 'comida', 'cena'];
+      let doneCount = 0;
+      keys.forEach(k => {
+        const isDone = !!APP_STATE.mealsDone[k];
+        if (isDone) doneCount++;
+
+        const card = document.getElementById(`mealCard-${k}`);
+        const badge = document.getElementById(`badge-${k}`);
+        const btn = card?.querySelector('.meal-check-btn');
+
+        if (isDone) {
+          badge?.classList.remove('hidden');
+          if (btn) {
+            btn.className = 'meal-check-btn w-7 h-7 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white flex items-center justify-center transition active:scale-90';
+          }
+        } else {
+          badge?.classList.add('hidden');
+          if (btn) {
+            btn.className = 'meal-check-btn w-7 h-7 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90';
+          }
+        }
+      });
+
+      const pct = Math.round((doneCount / 3) * 100);
+      document.getElementById('mealsProgressLabel').innerText = `${doneCount} de 3 comidas hechas`;
+      document.getElementById('mealsProgressBar').style.width = `${pct}%`;
+    }
+
+    // ================= WEEKLY MENU SYSTEM (Dynamic Days) =================
+    const WEEKLY_DATABASE = {
+      lun: [
+        { type: 'Desayuno', name: 'Licuado de avena, plátano y canela con pan tostado', time: '6 min', cost: 20, desc: 'Avena molida, leche o agua, plátano entero y 1 rebanada de pan tostado.' },
+        { type: 'Comida', name: 'Pechuga asada con arroz y ensalada de espinaca', time: '15 min', cost: 42, desc: '120g de pollo a la plancha, 1 taza de arroz y hojas de espinaca con limón.' },
+        { type: 'Cena', name: 'Molletes ligeros con frijol y queso panela', time: '10 min', cost: 22, desc: 'Bolillo o pan integral con frijoles refritos y panela en comal con salsa.' }
+      ],
+      mar: [
+        { type: 'Desayuno', name: 'Huevos revueltos a la mexicana con 2 tortillas', time: '8 min', cost: 24, desc: '2 huevos con jitomate y cebolla picada. Acompañado de frijoles de olla.' },
+        { type: 'Comida', name: 'Bowl de atún en agua con arroz blanco y aguacate', time: '12 min', cost: 38, desc: 'Lata de atún drenada, base de arroz caliente, limón y 1/4 de aguacate.' },
+        { type: 'Cena', name: 'Tacos dorados de frijol en comal (sin freír)', time: '10 min', cost: 18, desc: '3 tortillas rellenas de frijol tostadas en comal con salsa y queso.' }
+      ],
+      mie: [
+        { type: 'Desayuno', name: 'Avena express con plátano y crema de cacahuate', time: '5 min', cost: 22, desc: 'Hojuelas de avena hidratadas en microondas con plátano rebanado.' },
+        { type: 'Comida', name: 'Fajitas de pollo express con pimientos y cebolla', time: '15 min', cost: 42, desc: 'Tiras de pollo doradas en sartén con pimiento verde y guarnición de arroz.' },
+        { type: 'Cena', name: 'Quesadillas en comal con panela y frijol', time: '10 min', cost: 25, desc: 'Tortillas de maíz calientes con queso panela suave y frijol untado.' }
+      ],
+      jue: [
+        { type: 'Desayuno', name: 'Omelette de espinacas y queso panela', time: '8 min', cost: 26, desc: '2 huevos batidos con manojo de espinaca picada y panela al centro.' },
+        { type: 'Comida', name: 'Lentejas caseras con huevo cocido y arroz', time: '14 min', cost: 30, desc: 'Plato hondo de lentejas con verduras, 1 huevo cocido y arroz blanco.' },
+        { type: 'Cena', name: 'Sincronizadas de maíz con panela y pico de gallo', time: '8 min', cost: 24, desc: 'Panela derretida entre tortillas con jitomate, cebolla y cilantro.' }
+      ],
+      vie: [
+        { type: 'Desayuno', name: 'Huevos con jamón de pavo o frijoles y totopos', time: '9 min', cost: 25, desc: 'Huevos al gusto acompañados de frijoles refritos y totopos horneados.' },
+        { type: 'Comida', name: 'Tacos de atún a la plancha con cebolla y aguacate', time: '12 min', cost: 36, desc: 'Atún guisado con cebolla y limón servido en 3 tortillas con aguacate.' },
+        { type: 'Cena', name: 'Sandwich de panela asada con jitomate y orégano', time: '7 min', cost: 22, desc: 'Pan integral tostado con panela en comal, rebanadas de jitomate y aceite de oliva.' }
+      ],
+      sab: [
+        { type: 'Desayuno', name: 'Chilaquiles fit express con huevo estrellado', time: '10 min', cost: 24, desc: 'Tortillas tostadas en sartén bañadas en salsa verde con 1 huevo encima.' },
+        { type: 'Comida', name: 'Pollo deshebrado con verduras al vapor y arroz', time: '15 min', cost: 40, desc: 'Pechuga cocida con zanahoria, calabacita y arroz con salsa.' },
+        { type: 'Cena', name: 'Cena libre saludable: Tostadas horneadas con frijol y queso', time: '6 min', cost: 20, desc: 'Tostadas de maíz horneadas con frijoles, lechuga y panela rallada.' }
+      ]
+    };
+
+    function renderWeeklyDay(dayKey) {
+      APP_STATE.activeDay = dayKey;
+      const meals = WEEKLY_DATABASE[dayKey] || WEEKLY_DATABASE['mie'];
+      const container = document.getElementById('weeklyMealsContainer');
+      
+      container.innerHTML = meals.map((m, idx) => `
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 hover:border-emerald-200 transition">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold ${idx === 0 ? 'text-amber-600' : idx === 1 ? 'text-emerald-600' : 'text-teal-600'} uppercase">
+              ${idx === 0 ? '☀️' : idx === 1 ? '🍲' : '🌙'} ${m.type}
+            </span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">⏱️ ${m.time} • ~$${m.cost} MXN</span>
+              <button onclick="swapMealCard('${dayKey}', ${idx})" title="Cambiar platillo" class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-emerald-50 hover:text-emerald-700 active:scale-90 transition">
+                ↺
+              </button>
+            </div>
+          </div>
+          <h4 class="font-bold text-slate-800 text-sm">${m.name}</h4>
+          <p class="text-xs text-slate-500">${m.desc}</p>
+        </div>
+      `).join('');
+    }
+
+    function changeDayView(dayKey, btn) {
+      document.querySelectorAll('.day-btn').forEach(b => {
+        b.classList.remove('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
+        b.classList.add('bg-white', 'text-slate-600');
+        const span = b.querySelector('span');
+        if (span) span.className = 'block text-[10px] text-slate-400 font-medium';
+      });
+      btn.classList.remove('bg-white', 'text-slate-600');
+      btn.classList.add('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
+      const span = btn.querySelector('span');
+      if (span) span.className = 'block text-[10px] text-emerald-100 font-medium';
+
+      renderWeeklyDay(dayKey);
+    }
+
+    function swapMealCard(dayKey, mealIdx) {
+      const alternatives = [
+        { name: 'Omelette con queso y espinacas', time: '8 min', cost: 22, desc: 'Huevos batidos en comal con relleno vegetal y panela.' },
+        { name: 'Tacos de atún y aguacate', time: '10 min', cost: 35, desc: '3 tortillas con atún escurrido, limón y aguacate.' },
+        { name: 'Arroz frito express con huevo y verdura', time: '12 min', cost: 26, desc: 'Arroz blanco salteado con huevo revuelto y cebolla.' },
+        { name: 'Quesadillas con frijol de la olla', time: '7 min', cost: 19, desc: 'Tortillas de maíz al comal con frijol y queso derretido.' }
+      ];
+      const pick = alternatives[Math.floor(Math.random() * alternatives.length)];
+      WEEKLY_DATABASE[dayKey][mealIdx].name = pick.name;
+      WEEKLY_DATABASE[dayKey][mealIdx].time = pick.time;
+      WEEKLY_DATABASE[dayKey][mealIdx].cost = pick.cost;
+      WEEKLY_DATABASE[dayKey][mealIdx].desc = pick.desc;
+      renderWeeklyDay(dayKey);
+      showToast('🔄 Platillo intercambiado con éxito');
+    }
+
+    function randomizeCurrentDayMenu() {
+      swapMealCard(APP_STATE.activeDay, 0);
+      swapMealCard(APP_STATE.activeDay, 1);
+      swapMealCard(APP_STATE.activeDay, 2);
+    }
+
+    // ================= RESCATE DE REFRI SYSTEM =================
+    const REFRI_RECIPES = [
+      {
+        req: ['huevos', 'tortillas'],
+        title: "Chilaquiles Fit Express en Sartén",
+        time: "⚡ 10 min",
+        items: ["3 tortillas doradas en comal", "2 huevos al gusto", "Salsa casera de jitomate"],
+        steps: ["Corta las tortillas en triángulos y dóralas en comal caliente sin aceite.", "Prepara los huevos al gusto en el sartén.", "Baña las tortillas con la salsa caliente y sirve con los huevos encima."]
+      },
+      {
+        req: ['huevos', 'atun'],
+        title: "Omelette de Atún y Queso Panela",
+        time: "⚡ 8 min",
+        items: ["2 huevos", "Media lata de atún escurrida", "Queso panela en cubos"],
+        steps: ["Bate los dos huevos con una pizca de sal y pimienta.", "Vierte en sartén caliente con poco aceite.", "Agrega el atún y queso al centro, dobla a la mitad y cocina 3 minutos."]
+      },
+      {
+        req: ['frijoles', 'tortillas'],
+        title: "Tacos Dorados de Frijol y Aguacate",
+        time: "⚡ 12 min",
+        items: ["3 tortillas de maíz", "1/2 taza de frijoles refritos", "Rebanadas de aguacate"],
+        steps: ["Unta los frijoles en las tortillas tibias y enróllalas.", "Dóralas en sartén con una gota de aceite hasta que queden crujientes.", "Acompaña con aguacate y salsa."]
+      },
+      {
+        req: ['arroz', 'atun'],
+        title: "Bowl Universitario de Atún con Arroz",
+        time: "⚡ 7 min",
+        items: ["1 taza de arroz blanco cocido", "1 lata de atún en agua", "Jitomate picado y limón"],
+        steps: ["Calienta la taza de arroz en el microondas 1 minuto.", "Mezcla la lata de atún escurrida con jitomate picado y limón.", "Sirve encima del arroz."]
+      },
+      {
+        req: ['panela', 'tortillas'],
+        title: "Sincronizadas con Panela y Frijol",
+        time: "⚡ 8 min",
+        items: ["2 tortillas de maíz", "80g queso panela", "Frijoles untados"],
+        steps: ["Unta frijol en las tortillas.", "Coloca las rebanadas de panela al centro.", "Dora en comal 2 minutos por lado hasta que quede tostado."]
+      }
+    ];
+
+    function toggleIngredient(btn, ingKey) {
       btn.classList.toggle('active');
       if (btn.classList.contains('active')) {
         btn.classList.remove('bg-slate-100', 'text-slate-700', 'border-slate-200');
@@ -769,74 +998,245 @@
         btn.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-200');
         btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
       }
-      const count = document.querySelectorAll('.ing-pill.active').length;
-      document.getElementById('selectedCount').innerText = count + ' seleccionados';
+      updateRefriCount();
     }
 
-    // Generate Recipe from Fridge
-    const sampleRecipes = [
-      {
-        title: "Chilaquiles Fit Express en Sartén",
-        time: "⚡ 10 min",
-        cost: "$0.00 MXN",
-        items: ["3 tortillas doradas en comal", "2 huevos al gusto", "Salsa casera de jitomate"],
-        steps: ["Corta las tortillas en triángulos y dóralas en comal caliente sin aceite.", "Prepara los huevos al gusto en el sartén.", "Baña las tortillas con la salsa caliente y sirve con los huevos encima."]
-      },
-      {
-        title: "Omelette de Atún y Queso Panela",
-        time: "⚡ 8 min",
-        cost: "$0.00 MXN",
-        items: ["2 huevos", "Media lata de atún escurrida", "Rebanada de queso panela en cubos"],
-        steps: ["Bate los dos huevos con una pizca de sal y pimienta.", "Vierte en un sartén caliente con poco aceite.", "Agrega el atún y queso al centro, dobla a la mitad y cocina 3 minutos más."]
-      },
-      {
-        title: "Tacos Dorados de Frijol y Aguacate",
-        time: "⚡ 12 min",
-        cost: "$0.00 MXN",
-        items: ["3 tortillas de maíz", "1/2 taza de frijoles refritos", "Rebanadas de aguacate"],
-        steps: ["Unta los frijoles en las tortillas tibias y enróllalas.", "Dóralas en sartén con una gota de aceite hasta que queden crujientes.", "Acompaña con aguacate y salsa."]
-      }
-    ];
+    function updateRefriCount() {
+      const activePills = document.querySelectorAll('.ing-pill.active');
+      document.getElementById('selectedCount').innerText = `${activePills.length} seleccionados`;
+    }
 
-    let currentRecipeIdx = 0;
-    function generateRefriRecipe() {
-      currentRecipeIdx = (currentRecipeIdx + 1) % sampleRecipes.length;
-      const rec = sampleRecipes[currentRecipeIdx];
-      const container = document.getElementById('refriResult');
+    function addCustomIngredient() {
+      const input = document.getElementById('customIngInput');
+      const val = input.value.trim().toLowerCase();
+      if (!val) return;
       
-      container.innerHTML = `
-        <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 animate-pulse">
-          <span>✨</span> ¡Nueva Receta Encontrada!
-        </h4>
-        <div class="bg-white rounded-2xl p-4 border-2 border-emerald-500 shadow-sm space-y-3 transition">
-          <div class="flex items-start justify-between">
-            <div>
-              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Compatibilidad: 98%</span>
-              <h4 class="text-sm font-bold text-slate-800 mt-1">${rec.title}</h4>
+      const container = document.getElementById('ingredientsPills');
+      const btn = document.createElement('button');
+      btn.onclick = () => toggleIngredient(btn, val);
+      btn.setAttribute('data-ing', val);
+      btn.className = 'ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1';
+      btn.innerText = `🥗 ${val.charAt(0).toUpperCase() + val.slice(1)}`;
+      container.appendChild(btn);
+      input.value = '';
+      updateRefriCount();
+      showToast(`Ingrediente "${val}" agregado a tu refri`);
+    }
+
+    function generateRefriRecipe() {
+      const btn = document.getElementById('btnGenerateRefri');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = `<span class="animate-spin mr-1">⏳</span> Analizando tus sobras...`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+
+        const activeElements = Array.from(document.querySelectorAll('.ing-pill.active')).map(el => el.getAttribute('data-ing'));
+        
+        // Find best matching recipe or fallback
+        let matched = REFRI_RECIPES.find(r => r.req.every(req => activeElements.includes(req))) || REFRI_RECIPES[0];
+        
+        const container = document.getElementById('refriResult');
+        container.innerHTML = `
+          <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 animate-pulse">
+            <span>✨</span> ¡Receta Optimizada para tus Ingredientes!
+          </h4>
+          <div class="bg-white rounded-2xl p-4 border-2 border-emerald-500 shadow-sm space-y-3 transition">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Compatibilidad: 98%</span>
+                <h4 class="text-sm font-bold text-slate-800 mt-1">${matched.title}</h4>
+              </div>
+              <span class="text-xs font-bold text-slate-600">${matched.time}</span>
             </div>
-            <span class="text-xs font-bold text-slate-600">${rec.time}</span>
-          </div>
 
-          <div class="bg-slate-50 rounded-xl p-2.5 text-xs text-slate-600 space-y-1">
-            <p class="font-semibold text-slate-800">Usa tus ingredientes:</p>
-            ${rec.items.map(i => `<p>• ${i}</p>`).join('')}
-          </div>
+            <div class="bg-slate-50 rounded-xl p-2.5 text-xs text-slate-600 space-y-1">
+              <p class="font-semibold text-slate-800">Usa lo que tienes:</p>
+              ${matched.items.map(i => `<p>• ${i}</p>`).join('')}
+            </div>
 
-          <div class="flex items-center justify-between pt-1">
-            <span class="text-xs text-emerald-600 font-bold">Costo extra: $0.00 MXN</span>
-            <button onclick="openCustomRecipeModal('${rec.title}', '${rec.time}', '${rec.items.join('|')}', '${rec.steps.join('|')}')" class="text-xs font-bold text-emerald-700 underline">Ver preparación</button>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-xs text-emerald-600 font-bold">Costo extra: $0.00 MXN</span>
+              <button onclick="openCustomRecipeModal('${matched.title}', '${matched.time}', '${matched.items.join('|')}', '${matched.steps.join('|')}')" class="text-xs font-bold text-emerald-700 underline">
+                Ver pasos detallados
+              </button>
+            </div>
           </div>
+        `;
+        showToast('🍲 ¡Receta generada con tus sobras!', '✨');
+      }, 500);
+    }
+
+    // ================= SUPERMARKET CHECKLIST & BUDGET SYSTEM =================
+    function renderGroceryList() {
+      const container = document.getElementById('groceryCategoriesContainer');
+      const cats = [
+        { key: 'veg', label: '🥬 Frutas y Verduras' },
+        { key: 'pro', label: '🍗 Proteínas & Lácteos' },
+        { key: 'pantry', label: '🌾 Alacena Básica' }
+      ];
+
+      container.innerHTML = cats.map(c => {
+        const items = APP_STATE.groceryItems.filter(i => i.cat === c.key);
+        const subtotal = items.reduce((acc, i) => acc + i.price, 0);
+
+        return `
+          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
+            <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
+              <span>${c.label}</span>
+              <span class="text-[10px] text-slate-400 font-normal">~$${subtotal} MXN</span>
+            </h4>
+            <div class="space-y-2 text-xs">
+              ${items.map(item => `
+                <div class="flex items-center justify-between group">
+                  <label class="flex items-center space-x-2.5 cursor-pointer flex-1">
+                    <input type="checkbox" onchange="toggleGroceryItem('${item.id}', this)" ${item.checked ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                    <span class="text-slate-700 ${item.checked ? 'line-through text-slate-400' : ''}">${item.name} (~$${item.price})</span>
+                  </label>
+                  <button onclick="deleteGroceryItem('${item.id}')" title="Eliminar" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 text-xs px-1">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      recalculateGroceryTotals();
+    }
+
+    function toggleGroceryItem(id, cb) {
+      const item = APP_STATE.groceryItems.find(i => i.id === id);
+      if (item) {
+        item.checked = cb.checked;
+        saveState();
+        renderGroceryList();
+      }
+    }
+
+    function deleteGroceryItem(id) {
+      APP_STATE.groceryItems = APP_STATE.groceryItems.filter(i => i.id !== id);
+      saveState();
+      renderGroceryList();
+      showToast('Producto eliminado');
+    }
+
+    function addCustomGroceryItem() {
+      const nameInput = document.getElementById('newGroceryName');
+      const costInput = document.getElementById('newGroceryCost');
+      const name = nameInput.value.trim();
+      const price = parseInt(costInput.value) || 25;
+
+      if (!name) return;
+
+      APP_STATE.groceryItems.push({
+        id: 'custom_' + Date.now(),
+        cat: 'pantry',
+        name: name,
+        price: price,
+        checked: false
+      });
+
+      nameInput.value = '';
+      costInput.value = '';
+      saveState();
+      renderGroceryList();
+      showToast(`"${name}" agregado a tu lista de súper`);
+    }
+
+    function recalculateGroceryTotals() {
+      const totalEstimated = APP_STATE.groceryItems.reduce((acc, i) => acc + i.price, 0);
+      const spent = APP_STATE.groceryItems.filter(i => i.checked).reduce((acc, i) => acc + i.price, 0);
+      const savings = Math.max(0, APP_STATE.budget - totalEstimated);
+
+      document.getElementById('cartEstimatedTotal').innerText = `$${totalEstimated} MXN`;
+      document.getElementById('cartSpentTotal').innerText = `$${spent} MXN`;
+      document.getElementById('cartSavingLabel').innerText = `+$${savings} MXN`;
+      document.getElementById('heroBudgetStatus').innerText = `$${totalEstimated} / $${APP_STATE.budget} MXN`;
+    }
+
+    function updateBudget(val) {
+      APP_STATE.budget = parseInt(val);
+      document.getElementById('budgetValueLabel').innerText = `$${val} MXN`;
+      document.getElementById('menuBudgetSubtitle').innerText = `$${val}/sem`;
+      recalculateGroceryTotals();
+      saveState();
+    }
+
+    function copySuperListToClipboard() {
+      const text = "🛒 *LISTA DE SÚPER VIVE+*\n" + APP_STATE.groceryItems.map(i => `${i.checked ? '✅' : '⬜'} ${i.name} ($${i.price})`).join('\n') + `\n\nTotal estimado: ${document.getElementById('cartEstimatedTotal').innerText}`;
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        showToast('📋 ¡Lista copiada al portapapeles!');
+      } else {
+        showToast('Lista lista para enviar');
+      }
+    }
+
+    // ================= NUTRITIONIST CHAT SYSTEM =================
+    function sendNutriQuestion() {
+      const input = document.getElementById('nutriQuestionInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      // Add user message
+      const container = document.getElementById('chatMessagesContainer');
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex items-start justify-end space-x-2';
+      userBubble.innerHTML = `
+        <div class="bg-emerald-600 text-white text-xs p-2.5 rounded-2xl rounded-tr-sm max-w-[85%] leading-relaxed shadow-sm">
+          ${query}
         </div>
       `;
+      container.appendChild(userBubble);
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      // Show typing indicator
+      const typing = document.getElementById('typingIndicator');
+      typing.classList.remove('hidden');
+
+      setTimeout(() => {
+        typing.classList.add('hidden');
+
+        // Dynamic clinical response generator
+        let reply = "Hola Alfonso, ¡excelente pregunta! Recuerda que no necesitas recetas complejas ni eliminar alimentos para tener energía en la universidad. Cuidar tus horarios y dormir bien es el 80% del éxito.";
+        const qLower = query.toLowerCase();
+
+        if (qLower.includes('carbohidrato') || qLower.includes('noche') || qLower.includes('engorda')) {
+          reply = "¡Para nada! Los carbohidratos en la noche no engordan por la hora. El cuerpo utiliza esa energía para recuperarse del día y rendir en tus clases de la mañana. Cena con tranquilidad tus tortillas o arroz.";
+        } else if (qLower.includes('atun') || qLower.includes('huevo') || qLower.includes('proteina')) {
+          reply = "El atún y los huevos son las proteínas más completas y económicas para estudiantes. Consumirlos 1 o 2 veces al día cubre tus requerimientos sin gastar de más.";
+        } else if (qLower.includes('cafe') || qLower.includes('ayuno')) {
+          reply = "Evita tomar café con el estómago completamente vacío si tienes clases largas, ya que puede provocarte acidez o picos de ansiedad. Acompáñalo con tu avena o medio plátano.";
+        }
+
+        const docBubble = document.createElement('div');
+        docBubble.className = 'flex items-start space-x-2 animate-in fade-in';
+        docBubble.innerHTML = `
+          <div class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 text-[10px] flex items-center justify-center font-bold flex-shrink-0">
+            SR
+          </div>
+          <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed">
+            ${reply}
+          </div>
+        `;
+        container.appendChild(docBubble);
+        container.scrollTop = container.scrollHeight;
+        showToast('👩‍⚕️ Dra. Sofía respondió a tu consulta');
+      }, 1400);
     }
 
-    // Modal Recipes Database
+    // ================= RECIPES & COOKING TIMER MODAL =================
     const recipesDB = {
       avena: {
         category: "Desayuno Express",
         title: "Avena con Plátano y Crema de Cacahuate",
         time: "⏱️ 5 min",
         cost: "~$22 MXN",
+        timerSecs: 300,
         ingredients: [
           "1/2 taza de hojuelas de avena",
           "1 taza de agua o leche",
@@ -854,6 +1254,7 @@
         title: "Bowl de Atún, Arroz y Aguacate",
         time: "⏱️ 12 min",
         cost: "~$38 MXN",
+        timerSecs: 720,
         ingredients: [
           "1 lata de atún en agua escurrida",
           "1 taza de arroz blanco o integral cocido",
@@ -871,6 +1272,7 @@
         title: "Quesadillas en Comal con Panela y Frijol",
         time: "⏱️ 10 min",
         cost: "~$25 MXN",
+        timerSecs: 600,
         ingredients: [
           "2 tortillas de maíz",
           "80g de queso panela en rebanadas",
@@ -882,25 +1284,12 @@
           "Unta una capa delgada de frijoles sobre cada tortilla y coloca el queso panela.",
           "Dobla y deja dorar a fuego medio 2 minutos por lado hasta que el queso se suavice."
         ]
-      },
-      chilaquiles: {
-        category: "Rescate de Refri",
-        title: "Chilaquiles Fit Express en Sartén",
-        time: "⏱️ 10 min",
-        cost: "$0.00 MXN",
-        ingredients: [
-          "3 tortillas frías o del día anterior",
-          "2 huevos de tu refrigerador",
-          "1/2 taza de salsa de jitomate",
-          "Una pizca de sal y orégano"
-        ],
-        steps: [
-          "Corta las tortillas en triángulos y dóralas en comal seco hasta que queden tostadas.",
-          "En el mismo sartén haz los huevos a tu gusto.",
-          "Calienta la salsa, baña los totopos y coloca los huevos encima."
-        ]
       }
     };
+
+    let kitchenTimerInterval = null;
+    let kitchenTimerRemaining = 600;
+    let timerRunning = false;
 
     function openRecipeModal(key) {
       const data = recipesDB[key];
@@ -916,6 +1305,10 @@
       const stepsList = document.getElementById('modalSteps');
       stepsList.innerHTML = data.steps.map(s => `<li>${s}</li>`).join('');
 
+      kitchenTimerRemaining = data.timerSecs || 600;
+      updateKitchenTimerDisplay();
+      resetKitchenTimer();
+
       document.getElementById('recipeModal').classList.remove('hidden');
     }
 
@@ -930,68 +1323,78 @@
 
       document.getElementById('modalIngredients').innerHTML = items.map(i => `<li>• ${i}</li>`).join('');
       document.getElementById('modalSteps').innerHTML = steps.map(s => `<li>${s}</li>`).join('');
+
+      kitchenTimerRemaining = 600;
+      updateKitchenTimerDisplay();
+      resetKitchenTimer();
+
       document.getElementById('recipeModal').classList.remove('hidden');
     }
 
     function closeRecipeModal() {
+      resetKitchenTimer();
       document.getElementById('recipeModal').classList.add('hidden');
     }
 
-    function selectDay(btn, day) {
-      document.querySelectorAll('.day-btn').forEach(b => {
-        b.classList.remove('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
-        b.classList.add('bg-white', 'text-slate-600');
-        const span = b.querySelector('span');
-        if (span) span.className = 'block text-[10px] text-slate-400 font-medium';
-      });
-      btn.classList.remove('bg-white', 'text-slate-600');
-      btn.classList.add('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
-      const span = btn.querySelector('span');
-      if (span) span.className = 'block text-[10px] text-emerald-100 font-medium';
+    function updateKitchenTimerDisplay() {
+      const mins = Math.floor(kitchenTimerRemaining / 60);
+      const secs = kitchenTimerRemaining % 60;
+      document.getElementById('kitchenTimerDisplay').innerText = 
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
-    function randomizeMenu() {
-      const meals = [
-        { d: "Omelette de espinacas y queso panela", c: "Pollo a la plancha con puré de papa y ensalada", n: "Tacos de atún a la mexicana" },
-        { d: "Licuado de avena, plátano y canela con pan tostado", c: "Lentejas caseras con huevo cocido y arroz", n: "Molletes con queso y pico de gallo" },
-        { d: "Huevos revueltos con frijol y tortillas", c: "Pechuga asada con verduras salteadas en comal", n: "Quesadilla doble con aguacate" }
-      ];
-      const pick = meals[Math.floor(Math.random() * meals.length)];
-      document.getElementById('weeklyMealsContainer').innerHTML = `
-        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 animate-in fade-in">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-amber-600 uppercase">☀️ Desayuno</span>
-            <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">8 min • $22 MXN</span>
-          </div>
-          <h4 class="font-bold text-slate-800 text-sm">${pick.d}</h4>
-        </div>
-        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 animate-in fade-in">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-emerald-600 uppercase">🍲 Comida</span>
-            <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">15 min • $38 MXN</span>
-          </div>
-          <h4 class="font-bold text-slate-800 text-sm">${pick.c}</h4>
-        </div>
-        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 animate-in fade-in">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-teal-600 uppercase">🌙 Cena</span>
-            <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">10 min • $24 MXN</span>
-          </div>
-          <h4 class="font-bold text-slate-800 text-sm">${pick.n}</h4>
-        </div>
-      `;
+    function toggleKitchenTimer() {
+      const btn = document.getElementById('btnTimerToggle');
+      if (timerRunning) {
+        clearInterval(kitchenTimerInterval);
+        timerRunning = false;
+        btn.innerText = 'Reanudar';
+        btn.className = 'bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+      } else {
+        timerRunning = true;
+        btn.innerText = 'Pausar';
+        btn.className = 'bg-rose-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+        kitchenTimerInterval = setInterval(() => {
+          if (kitchenTimerRemaining > 0) {
+            kitchenTimerRemaining--;
+            updateKitchenTimerDisplay();
+          } else {
+            clearInterval(kitchenTimerInterval);
+            timerRunning = false;
+            btn.innerText = '¡Listo!';
+            btn.className = 'bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+            showToast('⏰ ¡Tiempo terminado! Tu comida está lista', '🔔');
+          }
+        }, 1000);
+      }
     }
 
-    function sendNutriQuestion() {
-      const input = document.getElementById('nutriQuestionInput');
-      if (!input.value.trim()) return;
-      input.value = '';
-      const notice = document.getElementById('nutriReplyNotice');
-      notice.classList.remove('hidden');
-      setTimeout(() => {
-        notice.classList.add('hidden');
-      }, 4000);
+    function resetKitchenTimer() {
+      if (kitchenTimerInterval) clearInterval(kitchenTimerInterval);
+      timerRunning = false;
+      const btn = document.getElementById('btnTimerToggle');
+      if (btn) {
+        btn.innerText = 'Iniciar';
+        btn.className = 'bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition';
+      }
+      updateKitchenTimerDisplay();
     }
+
+    function addRecipeIngredientsToSuper() {
+      showToast('🛒 Ingredientes agregados a tu lista');
+      closeRecipeModal();
+      switchTab('super');
+    }
+
+    // ================= INITIAL STARTUP =================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      renderWaterUI();
+      updateMealsProgressUI();
+      renderWeeklyDay('mie');
+      renderGroceryList();
+      generateRefriRecipe();
+    });
   </script>
 </body>
 </html>
