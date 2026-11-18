@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VIVE+ | Nutrición Práctica y Accesible</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Hide scrollbars for clean app feel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-800 min-h-screen flex items-center justify-center p-0 md:p-6 antialiased">
+
+  <!-- Desktop Presentation Wrapper: Shows Mockup + QR Info on Desktop, full screen on Mobile -->
+  <div class="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8">
+    
+    <!-- DESKTOP PRESENTATION SIDEBAR (Visible only on Large Screens) -->
+    <div class="hidden lg:flex flex-col max-w-md text-white space-y-6 p-6">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+          <i data-lucide="leaf" class="w-7 h-7"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight">VIVE<span class="text-emerald-400">+</span></h1>
+          <p class="text-xs uppercase tracking-wider text-emerald-300 font-semibold">Proyecto de Innovación ITESO</p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl font-bold text-slate-100">Prototipo Interactivo de Validación</h2>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Diseñado para resolver los tres grandes problemas del estudiante universitario: 
+          <span class="text-emerald-300 font-medium">falta de tiempo</span>, 
+          <span class="text-emerald-300 font-medium">presupuesto ajustado</span> y 
+          <span class="text-emerald-300 font-medium">desinformación nutricional</span>.
+        </p>
+      </div>
+
+      <!-- Live QR Code Card for presentation -->
+      <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="qr-code" class="w-5 h-5 text-emerald-400"></i>
+            <span class="text-sm font-semibold text-slate-200">Escanear con tu celular</span>
+          </div>
+          <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">EN VIVO</span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <div class="bg-white p-2 rounded-xl shadow">
+            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https://diegogomez12.github.io/ProjectoIE/" alt="QR VIVE+" class="w-28 h-28 object-contain">
+          </div>
+          <div class="space-y-2 text-xs text-slate-400">
+            <p>Apunta la cámara de tu celular a este código para probar la app directamente en tu navegador móvil.</p>
+            <div class="text-[11px] text-emerald-400 font-mono break-all" id="qrUrlLabel">diegogomez12.github.io/ProjectoIE</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-xs text-slate-300">
+        <div class="flex items-center space-x-2 bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+          <i data-lucide="clock" class="w-4 h-4 text-emerald-400"></i>
+          <span>Recetas &lt;15 min</span>
+        </div>
+        <div class="flex items-center space-x-2 bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-400"></i>
+          <span>Ajustado al súper</span>
+        </div>
+        <div class="flex items-center space-x-2 bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+          <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+          <span>Rescate de Refri</span>
+        </div>
+        <div class="flex items-center space-x-2 bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Avalado por Nutriólogos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE PHONE FRAME (The Actual Web App) -->
+    <div class="w-full max-w-[420px] h-[100dvh] md:h-[840px] bg-slate-50 md:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden border-0 md:border-[10px] md:border-slate-800">
+      
+      <!-- Top Mobile Status / App Header -->
+      <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 px-5 pt-4 pb-3 flex items-center justify-between z-20">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-600/20">
+            <i data-lucide="leaf" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="font-extrabold text-lg text-slate-800 tracking-tight">VIVE<span class="text-emerald-600">+</span></span>
+              <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">ITESO</span>
+            </div>
+            <p class="text-[10px] text-slate-400 font-medium">Modo Universitario</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Streak Indicator -->
+          <div class="flex items-center space-x-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
+            <span>🔥</span>
+            <span>4 días</span>
+          </div>
+          <!-- Profile Badge -->
+          <button onclick="switchTab('nutri')" class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
+            <i data-lucide="user" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- MAIN SCROLLABLE APP BODY -->
+      <main class="flex-1 overflow-y-auto no-scrollbar pb-24 px-4 pt-4 bg-slate-50/60">
+
+        <!-- ================= TAB 1: HOY (DASHBOARD) ================= -->
+        <section id="tab-hoy" class="space-y-4">
+          <!-- Greeting Card -->
+          <div class="bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-800 rounded-3xl p-5 text-white shadow-lg shadow-emerald-700/20 relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+            
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-emerald-200 font-semibold">Miércoles, 18 de Nov</p>
+                <h3 class="text-xl font-bold mt-0.5">¡Hola, Diego! 👋</h3>
+                <p class="text-xs text-emerald-100/90 mt-1 max-w-[240px]">
+                  Tienes <span class="font-semibold text-white">2 comidas prácticas</span> listas para hoy antes de tus clases.
+                </p>
+              </div>
+              <div class="bg-white/20 backdrop-blur-md rounded-2xl p-2.5 text-center">
+                <span class="block text-xs text-emerald-100 font-medium">Meta Hoy</span>
+                <span class="text-base font-extrabold text-white">Energía</span>
+              </div>
+            </div>
+
+            <!-- Quick Budget Mini-Status -->
+            <div class="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-xs">
+              <span class="flex items-center gap-1.5 text-emerald-100">
+                <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                Presupuesto Semanal:
+              </span>
+              <span class="font-bold text-white bg-black/20 px-2 py-0.5 rounded-lg">$480 / $650 MXN</span>
+            </div>
+          </div>
+
+          <!-- Quick Action: Express Fridge Rescue Banner -->
+          <div onclick="switchTab('refri')" class="cursor-pointer bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 flex items-center justify-between hover:bg-amber-500/15 transition active:scale-[0.99]">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                🍳
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">¿Qué cocino con lo que tengo?</h4>
+                <p class="text-[11px] text-slate-500">Rescata comida de tu refri en &lt;15 min</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-amber-700"></i>
+          </div>
+
+          <!-- Water Intake Tracker (Interactive) -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                <i data-lucide="droplet" class="w-5 h-5 fill-blue-500"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Agua Diaria</h4>
+                <p class="text-[11px] text-slate-500"><span id="waterCount" class="font-semibold text-blue-600">5</span> de 8 vasos tomados</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="updateWater(-1)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 active:scale-95 transition">-</button>
+              <button onclick="updateWater(1)" class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/30 hover:bg-blue-600 active:scale-95 transition">+</button>
+            </div>
+          </div>
+
+          <!-- Today's Meals Section -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+                Menú de Hoy
+              </h3>
+              <button onclick="switchTab('menu')" class="text-xs text-emerald-600 font-semibold hover:underline">Ver semana completa</button>
+            </div>
+
+            <!-- Meal Card 1: Desayuno -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-xl bg-amber-100/70 flex items-center justify-center text-xl">
+                  🥞
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Desayuno (7:30 AM)</span>
+                  <h4 class="text-xs font-bold text-slate-800">Avena Express con Plátano y Crema de Cacahuate</h4>
+                  <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
+                    <span>⏱️ 5 min</span>
+                    <span>•</span>
+                    <span class="text-emerald-600 font-medium">~$22 MXN</span>
+                  </div>
+                </div>
+              </div>
+              <button onclick="openRecipeModal('avena')" class="text-xs font-semibold bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+                Ver
+              </button>
+            </div>
+
+            <!-- Meal Card 2: Comida -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-xl bg-red-100/70 flex items-center justify-center text-xl">
+                  🥗
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Comida (2:00 PM)</span>
+                  <h4 class="text-xs font-bold text-slate-800">Bowl de Atún, Arroz y Aguacate</h4>
+                  <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
+                    <span>⏱️ 12 min</span>
+                    <span>•</span>
+                    <span class="text-emerald-600 font-medium">~$38 MXN</span>
+                  </div>
+                </div>
+              </div>
+              <button onclick="openRecipeModal('atun')" class="text-xs font-semibold bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+                Ver
+              </button>
+            </div>
+
+            <!-- Meal Card 3: Cena -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100/70 flex items-center justify-center text-xl">
+                  🌮
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Cena (8:30 PM)</span>
+                  <h4 class="text-xs font-bold text-slate-800">Quesadillas en Comal con Panela y Frijol</h4>
+                  <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
+                    <span>⏱️ 10 min</span>
+                    <span>•</span>
+                    <span class="text-emerald-600 font-medium">~$25 MXN</span>
+                  </div>
+                </div>
+              </div>
+              <button onclick="openRecipeModal('quesadillas')" class="text-xs font-semibold bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+                Ver
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 2: MENÚ SEMANAL ================= -->
+        <section id="tab-menu" class="hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-800">Menú Semanal Flexible</h3>
+              <p class="text-xs text-slate-500">Adaptado a $600/sem y porciones ITESO</p>
+            </div>
+            <button onclick="randomizeMenu()" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 hover:bg-emerald-100 transition">
+              <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+              Regenerar
+            </button>
+          </div>
+
+          <!-- Day Selector Carousel -->
+          <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
+            <button onclick="selectDay(this, 'lun')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+              <span class="block text-[10px] text-slate-400 font-medium">LUN</span>
+              16
+            </button>
+            <button onclick="selectDay(this, 'mar')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+              <span class="block text-[10px] text-slate-400 font-medium">MAR</span>
+              17
+            </button>
+            <button onclick="selectDay(this, 'mie')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-emerald-600 text-white shadow-md shadow-emerald-600/25 text-xs font-bold">
+              <span class="block text-[10px] text-emerald-100 font-medium">MIÉ</span>
+              18
+            </button>
+            <button onclick="selectDay(this, 'jue')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+              <span class="block text-[10px] text-slate-400 font-medium">JUE</span>
+              19
+            </button>
+            <button onclick="selectDay(this, 'vie')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+              <span class="block text-[10px] text-slate-400 font-medium">VIE</span>
+              20
+            </button>
+            <button onclick="selectDay(this, 'sab')" class="day-btn flex-shrink-0 w-12 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
+              <span class="block text-[10px] text-slate-400 font-medium">SÁB</span>
+              21
+            </button>
+          </div>
+
+          <!-- Weekly Meal Cards Details -->
+          <div id="weeklyMealsContainer" class="space-y-3">
+            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-amber-600 uppercase">☀️ Desayuno</span>
+                <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">8 min • $24 MXN</span>
+              </div>
+              <h4 class="font-bold text-slate-800 text-sm">Huevos a la Mexicana con Frijoles Enteros</h4>
+              <p class="text-xs text-slate-500">2 huevos + 1/2 jitomate + cebolla + 1/2 taza frijol de olla. Acompañado de 2 tortillas de maíz.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-600 uppercase">🍲 Comida</span>
+                <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">15 min • $42 MXN</span>
+              </div>
+              <h4 class="font-bold text-slate-800 text-sm">Fajitas de Pollo Express con Pimientos</h4>
+              <p class="text-xs text-slate-500">120g pechuga de pollo en tiras, pimiento morrón verde y cebolla asada en sartén con 1 taza de arroz.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-teal-600 uppercase">🌙 Cena</span>
+                <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">10 min • $28 MXN</span>
+              </div>
+              <h4 class="font-bold text-slate-800 text-sm">Sincronizadas con Panela y Aguacate</h4>
+              <p class="text-xs text-slate-500">Tortilla de maíz o integral con queso panela asado, rebanadas de aguacate y salsa casera.</p>
+            </div>
+          </div>
+
+          <!-- Meal Prep Tip Card -->
+          <div class="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-100 flex items-start space-x-3">
+            <span class="text-xl">💡</span>
+            <div>
+              <h5 class="text-xs font-bold text-emerald-900">Hack Universitario:</h5>
+              <p class="text-[11px] text-emerald-800 mt-0.5">
+                Cuece 2 tazas de arroz el domingo por la noche. Te servirá de guarnición para 4 comidas de la semana y ahorrarás 20 minutos diarios.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 3: RESCATE DE REFRI ================= -->
+        <section id="tab-refri" class="hidden space-y-4">
+          <div class="bg-gradient-to-tr from-amber-500 to-orange-400 rounded-3xl p-5 text-white shadow-lg shadow-amber-500/20">
+            <div class="flex items-center space-x-2 text-amber-100 text-xs font-bold uppercase tracking-wider">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>Cero Desperdicio de Alimentos</span>
+            </div>
+            <h3 class="text-xl font-black mt-1">Rescate de Refri 🧊</h3>
+            <p class="text-xs text-amber-50 mt-1">
+              Selecciona lo que tienes en tu refri o alacena y te damos una receta nutritiva en segundos sin gastar ni un peso más.
+            </p>
+          </div>
+
+          <!-- Ingredient Selector Pills -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700">Tengo en mi cocina:</span>
+              <span id="selectedCount" class="text-[11px] font-semibold text-emerald-600">3 seleccionados</span>
+            </div>
+
+            <div class="flex flex-wrap gap-2" id="ingredientsPills">
+              <!-- Pill items -->
+              <button onclick="toggleIngredient(this)" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
+                🥚 Huevos
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
+                🐟 Lata de Atún
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
+                🌽 Tortillas
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+                🧀 Queso Panela
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+                🧅 Cebolla
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+                🍅 Jitomate
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+                🍚 Arroz cocido
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+                🫘 Frijoles
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+                🥑 Aguacate
+              </button>
+              <button onclick="toggleIngredient(this)" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
+                🥛 Leche / Avena
+              </button>
+            </div>
+
+            <button onclick="generateRefriRecipe()" class="w-full py-3 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/30 hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              Generar Receta con estos Ingredientes
+            </button>
+          </div>
+
+          <!-- Generated Recipe Result Container -->
+          <div id="refriResult" class="space-y-3">
+            <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <span>🍽️</span> Receta Express Sugerida:
+            </h4>
+
+            <div class="bg-white rounded-2xl p-4 border-2 border-emerald-500/40 shadow-sm space-y-3">
+              <div class="flex items-start justify-between">
+                <div>
+                  <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Compatibilidad: 95%</span>
+                  <h4 class="text-sm font-bold text-slate-800 mt-1">Chilaquiles Fit Express en Sartén</h4>
+                </div>
+                <span class="text-xs font-bold text-slate-600">⚡ 10 min</span>
+              </div>
+
+              <div class="bg-slate-50 rounded-xl p-2.5 text-xs text-slate-600 space-y-1">
+                <p class="font-semibold text-slate-800">Usa:</p>
+                <p>• 3 tortillas cortadas en triángulos doradas en comal (sin freír)</p>
+                <p>• 2 huevos estrellados o revueltos encima</p>
+                <p>• Salsa de tomate casera o envasada que tengas</p>
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-xs text-emerald-600 font-bold">Costo extra: $0.00 MXN</span>
+                <button onclick="openRecipeModal('chilaquiles')" class="text-xs font-bold text-emerald-700 underline">Ver pasos detallados</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 4: LISTA DE SÚPER ================= -->
+        <section id="tab-super" class="hidden space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-800">Lista de Súper Inteligente</h3>
+            <p class="text-xs text-slate-500">Calculada para tu menú semanal sin comprar de más</p>
+          </div>
+
+          <!-- Budget Slider & Summary -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-slate-700">Presupuesto asignado:</span>
+              <span id="budgetValueLabel" class="font-extrabold text-emerald-600 text-sm">$600 MXN</span>
+            </div>
+
+            <input type="range" min="300" max="1200" step="50" value="600" id="budgetRange" oninput="updateBudget(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+
+            <div class="flex items-center justify-between pt-1 text-xs border-t border-slate-100">
+              <span class="text-slate-500">Estimado en lista:</span>
+              <div class="flex items-center gap-1.5">
+                <span id="cartEstimatedTotal" class="font-bold text-slate-800">$485 MXN</span>
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">¡Ahorras $115!</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Supermarket Checklist Items -->
+          <div class="space-y-3">
+            <!-- Category 1: Verduras & Frutas -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
+              <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                <span>🥬 Frutas y Verduras</span>
+                <span class="text-[10px] text-slate-400 font-normal">~$120 MXN</span>
+              </h4>
+              <div class="space-y-2 text-xs">
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700 line-through text-slate-400">1 kg Jitomate saladette (~$28)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">1 Manojo de espinacas (~$18)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">Penca de 4 plátanos (~$22)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">2 Cebollas blancas (~$15)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Category 2: Proteínas Económicas -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
+              <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                <span>🍗 Proteínas & Lácteos</span>
+                <span class="text-[10px] text-slate-400 font-normal">~$240 MXN</span>
+              </h4>
+              <div class="space-y-2 text-xs">
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700 line-through text-slate-400">Cartera 12 huevos (~$46)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">3 Latas de atún en agua (~$54)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">400g Queso Panela (~$65)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">500g Pechuga de pollo en bistec (~$75)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Category 3: Abarrotes & Básicos -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2">
+              <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                <span>🌾 Alacena Básica</span>
+                <span class="text-[10px] text-slate-400 font-normal">~$125 MXN</span>
+              </h4>
+              <div class="space-y-2 text-xs">
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">1 Bolsa de Avena en hojuelas (~$25)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700">1 kg Arroz blanco (~$26)</span>
+                </label>
+                <label class="flex items-center space-x-2.5 cursor-pointer">
+                  <input type="checkbox" onchange="toggleCartItem(this)" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
+                  <span class="text-slate-700 line-through text-slate-400">1 kg Tortillas de maíz (~$24)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 5: NUTRIÓLOGO (VALIDACIÓN) ================= -->
+        <section id="tab-nutri" class="hidden space-y-4">
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 font-extrabold text-lg">
+                👩‍⚕️
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-sm font-bold text-slate-800">Dra. Sara Flores</h4>
+                  <span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">VERIFICADA</span>
+                </div>
+                <p class="text-xs text-slate-500">Clínica de Nutrición ITESO</p>
+                <p class="text-[10px] text-slate-400">Céd. Profesional: 9482104</p>
+              </div>
+            </div>
+
+            <!-- Validation Code Active -->
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
+              <div>
+                <span class="text-[10px] text-slate-400 block uppercase font-bold">Código de Vinculación</span>
+                <span class="font-mono font-bold text-slate-700">ITESO-VIVE26</span>
+              </div>
+              <span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-1 rounded-lg">Activo</span>
+            </div>
+          </div>
+
+          <!-- Professional Prescription & Notes -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2">
+            <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i data-lucide="clipboard-check" class="w-4 h-4 text-emerald-600"></i>
+              Observaciones del Profesional
+            </h4>
+            <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-3 text-xs text-emerald-900 leading-relaxed">
+              "Para Diego: Se ajustó el menú priorizando alimentos de bajo costo y alta densidad energética para sus horas de estudio matutinas. <strong>Cero dietas restrictivas</strong>; nos enfocamos en que nunca se salte el desayuno."
+            </div>
+          </div>
+
+          <!-- Quick Doubt vs Myth Buster -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-slate-800">Consulta Rápida con Nutriólogo</h4>
+              <span class="text-[10px] text-slate-400">Respuesta en &lt;2 hrs</span>
+            </div>
+            <p class="text-[11px] text-slate-500">¿Viste un tip en TikTok o tienes dudas con un alimento? Pregúntale a tu nutriólogo sin intermediarios.</p>
+            
+            <div class="flex gap-2">
+              <input type="text" id="nutriQuestionInput" placeholder="Ej. ¿Los carbohidratos en la noche engordan?" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+              <button onclick="sendNutriQuestion()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <div id="nutriReplyNotice" class="hidden text-[11px] text-emerald-700 bg-emerald-50 p-2 rounded-lg font-medium">
+              ✅ Pregunta enviada al servicio de nutrición. Te notificaremos al resolverla.
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- BOTTOM NAVIGATION BAR (FIXED) -->
+      <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around z-30">
+        <!-- Tab 1: Hoy -->
+        <button onclick="switchTab('hoy')" class="nav-item active flex flex-col items-center text-emerald-600 transition" data-tab="hoy">
+          <i data-lucide="home" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold mt-0.5">Hoy</span>
+        </button>
+
+        <!-- Tab 2: Menú -->
+        <button onclick="switchTab('menu')" class="nav-item flex flex-col items-center text-slate-400 hover:text-slate-600 transition" data-tab="menu">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold mt-0.5">Menú</span>
+        </button>
+
+        <!-- Tab 3: Refri (Highlight) -->
+        <button onclick="switchTab('refri')" class="nav-item flex flex-col items-center text-slate-400 hover:text-amber-500 transition relative" data-tab="refri">
+          <div class="w-10 h-10 -mt-5 bg-gradient-to-tr from-amber-500 to-orange-400 text-white rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[10px] font-bold mt-0.5 text-amber-600">Refri</span>
+        </button>
+
+        <!-- Tab 4: Súper -->
+        <button onclick="switchTab('super')" class="nav-item flex flex-col items-center text-slate-400 hover:text-slate-600 transition" data-tab="super">
+          <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold mt-0.5">Súper</span>
+        </button>
+
+        <!-- Tab 5: Nutri -->
+        <button onclick="switchTab('nutri')" class="nav-item flex flex-col items-center text-slate-400 hover:text-slate-600 transition" data-tab="nutri">
+          <i data-lucide="stethoscope" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold mt-0.5">Nutriólogo</span>
+        </button>
+      </nav>
+
+      <!-- RECIPE MODAL POPUP -->
+      <div id="recipeModal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition">
+        <div class="bg-white w-full rounded-t-3xl sm:rounded-3xl max-h-[85vh] overflow-y-auto no-scrollbar p-5 space-y-4 shadow-2xl animate-in slide-in-from-bottom">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <span id="modalCategory" class="text-[10px] font-bold text-emerald-600 uppercase">Receta Express</span>
+            <button onclick="closeRecipeModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+              ✕
+            </button>
+          </div>
+
+          <div class="space-y-1">
+            <h3 id="modalTitle" class="text-base font-extrabold text-slate-800">Nombre de la Receta</h3>
+            <div class="flex items-center gap-3 text-xs text-slate-500">
+              <span id="modalTime">⏱️ 10 min</span>
+              <span>•</span>
+              <span id="modalCost" class="text-emerald-600 font-semibold">~$25 MXN</span>
+              <span>•</span>
+              <span class="text-slate-400">1 Sartén</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Ingredientes exactos:</h4>
+            <ul id="modalIngredients" class="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Preparación (en 3 pasos):</h4>
+            <ol id="modalSteps" class="text-xs text-slate-600 space-y-2 list-decimal list-inside bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <!-- Dynamically populated -->
+            </ol>
+          </div>
+
+          <button onclick="closeRecipeModal()" class="w-full py-3 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/20 hover:bg-emerald-700">
+            ¡Entendido, a cocinar!
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      const tabs = ['hoy', 'menu', 'refri', 'super', 'nutri'];
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.classList.add('hidden');
+      });
+
+      const activeSection = document.getElementById('tab-' + tabId);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      // Update Nav Buttons
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        const match = btn.getAttribute('data-tab') === tabId;
+        if (match) {
+          btn.classList.add('text-emerald-600');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('text-emerald-600');
+          btn.classList.add('text-slate-400');
+        }
+      });
+
+      // Special highlight for refri tab
+      if (tabId === 'refri') {
+        const refriBtn = document.querySelector('[data-tab="refri"]');
+        if (refriBtn) refriBtn.querySelector('span').classList.add('text-amber-600');
+      }
+
+      window.scrollTo(0, 0);
+    }
+
+    // Water Tracker
+    let waterCount = 5;
+    function updateWater(delta) {
+      waterCount = Math.max(0, Math.min(12, waterCount + delta));
+      document.getElementById('waterCount').innerText = waterCount;
+    }
+
+    // Grocery Budget Slider
+    function updateBudget(val) {
+      document.getElementById('budgetValueLabel').innerText = '$' + val + ' MXN';
+    }
+
+    function toggleCartItem(cb) {
+      const label = cb.nextElementSibling;
+      if (cb.checked) {
+        label.classList.add('line-through', 'text-slate-400');
+      } else {
+        label.classList.remove('line-through', 'text-slate-400');
+      }
+    }
+
+    // Fridge Rescue Pills
+    function toggleIngredient(btn) {
+      btn.classList.toggle('active');
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('bg-slate-100', 'text-slate-700', 'border-slate-200');
+        btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+      } else {
+        btn.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-200');
+        btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+      }
+      const count = document.querySelectorAll('.ing-pill.active').length;
+      document.getElementById('selectedCount').innerText = count + ' seleccionados';
+    }
+
+    // Generate Recipe from Fridge
+    const sampleRecipes = [
+      {
+        title: "Chilaquiles Fit Express en Sartén",
+        time: "⚡ 10 min",
+        cost: "$0.00 MXN",
+        items: ["3 tortillas doradas en comal", "2 huevos al gusto", "Salsa casera de jitomate"],
+        steps: ["Corta las tortillas en triángulos y dóralas en comal caliente sin aceite.", "Prepara los huevos al gusto en el sartén.", "Baña las tortillas con la salsa caliente y sirve con los huevos encima."]
+      },
+      {
+        title: "Omelette de Atún y Queso Panela",
+        time: "⚡ 8 min",
+        cost: "$0.00 MXN",
+        items: ["2 huevos", "Media lata de atún escurrida", "Rebanada de queso panela en cubos"],
+        steps: ["Bate los dos huevos con una pizca de sal y pimienta.", "Vierte en un sartén caliente con poco aceite.", "Agrega el atún y queso al centro, dobla a la mitad y cocina 3 minutos más."]
+      },
+      {
+        title: "Tacos Dorados de Frijol y Aguacate",
+        time: "⚡ 12 min",
+        cost: "$0.00 MXN",
+        items: ["3 tortillas de maíz", "1/2 taza de frijoles refritos", "Rebanadas de aguacate"],
+        steps: ["Unta los frijoles en las tortillas tibias y enróllalas.", "Dóralas en sartén con una gota de aceite hasta que queden crujientes.", "Acompaña con aguacate y salsa."]
+      }
+    ];
+
+    let currentRecipeIdx = 0;
+    function generateRefriRecipe() {
+      currentRecipeIdx = (currentRecipeIdx + 1) % sampleRecipes.length;
+      const rec = sampleRecipes[currentRecipeIdx];
+      const container = document.getElementById('refriResult');
+      
+      container.innerHTML = `
+        <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 animate-pulse">
+          <span>✨</span> ¡Nueva Receta Encontrada!
+        </h4>
+        <div class="bg-white rounded-2xl p-4 border-2 border-emerald-500 shadow-sm space-y-3 transition">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Compatibilidad: 98%</span>
+              <h4 class="text-sm font-bold text-slate-800 mt-1">${rec.title}</h4>
+            </div>
+            <span class="text-xs font-bold text-slate-600">${rec.time}</span>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-2.5 text-xs text-slate-600 space-y-1">
+            <p class="font-semibold text-slate-800">Usa tus ingredientes:</p>
+            ${rec.items.map(i => `<p>• ${i}</p>`).join('')}
+          </div>
+
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-xs text-emerald-600 font-bold">Costo extra: $0.00 MXN</span>
+            <button onclick="openCustomRecipeModal('${rec.title}', '${rec.time}', '${rec.items.join('|')}', '${rec.steps.join('|')}')" class="text-xs font-bold text-emerald-700 underline">Ver preparación</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Modal Recipes Database
+    const recipesDB = {
+      avena: {
+        category: "Desayuno Express",
+        title: "Avena con Plátano y Crema de Cacahuate",
+        time: "⏱️ 5 min",
+        cost: "~$22 MXN",
+        ingredients: [
+          "1/2 taza de hojuelas de avena",
+          "1 taza de agua o leche",
+          "1 plátano maduro rebanado",
+          "1 cucharada de crema de cacahuate sin azúcar"
+        ],
+        steps: [
+          "Coloca la avena con el agua o leche en un tazón apto para microondas durante 2 minutos.",
+          "Saca del microondas y revuelve bien hasta que espese.",
+          "Decora con las rebanadas de plátano y la cucharada de crema de cacahuate encima."
+        ]
+      },
+      atun: {
+        category: "Comida Energética",
+        title: "Bowl de Atún, Arroz y Aguacate",
+        time: "⏱️ 12 min",
+        cost: "~$38 MXN",
+        ingredients: [
+          "1 lata de atún en agua escurrida",
+          "1 taza de arroz blanco o integral cocido",
+          "1/4 de aguacate rebanado",
+          "Jitomate picado y limón al gusto"
+        ],
+        steps: [
+          "Sirve la taza de arroz caliente como base del tazón.",
+          "Agrega encima la lata de atún escurrida y el jitomate picado.",
+          "Termina con las rebanadas de aguacate, exprime el limón y agrega sal al gusto."
+        ]
+      },
+      quesadillas: {
+        category: "Cena Ligera",
+        title: "Quesadillas en Comal con Panela y Frijol",
+        time: "⏱️ 10 min",
+        cost: "~$25 MXN",
+        ingredients: [
+          "2 tortillas de maíz",
+          "80g de queso panela en rebanadas",
+          "2 cucharadas de frijoles de olla refritos",
+          "Salsa casera al gusto"
+        ],
+        steps: [
+          "Calienta las tortillas en un comal o sartén.",
+          "Unta una capa delgada de frijoles sobre cada tortilla y coloca el queso panela.",
+          "Dobla y deja dorar a fuego medio 2 minutos por lado hasta que el queso se suavice."
+        ]
+      },
+      chilaquiles: {
+        category: "Rescate de Refri",
+        title: "Chilaquiles Fit Express en Sartén",
+        time: "⏱️ 10 min",
+        cost: "$0.00 MXN",
+        ingredients: [
+          "3 tortillas frías o del día anterior",
+          "2 huevos de tu refrigerador",
+          "1/2 taza de salsa de jitomate",
+          "Una pizca de sal y orégano"
+        ],
+        steps: [
+          "Corta las tortillas en triángulos y dóralas en comal seco hasta que queden tostadas.",
+          "En el mismo sartén haz los huevos a tu gusto.",
+          "Calienta la salsa, baña los totopos y coloca los huevos encima."
+        ]
+      }
+    };
+
+    function openRecipeModal(key) {
+      const data = recipesDB[key];
+      if (!data) return;
+      document.getElementById('modalCategory').innerText = data.category;
+      document.getElementById('modalTitle').innerText = data.title;
+      document.getElementById('modalTime').innerText = data.time;
+      document.getElementById('modalCost').innerText = data.cost;
+      
+      const ingList = document.getElementById('modalIngredients');
+      ingList.innerHTML = data.ingredients.map(i => `<li>• ${i}</li>`).join('');
+
+      const stepsList = document.getElementById('modalSteps');
+      stepsList.innerHTML = data.steps.map(s => `<li>${s}</li>`).join('');
+
+      document.getElementById('recipeModal').classList.remove('hidden');
+    }
+
+    function openCustomRecipeModal(title, time, itemsStr, stepsStr) {
+      document.getElementById('modalCategory').innerText = "Rescate de Refri";
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalTime').innerText = time;
+      document.getElementById('modalCost').innerText = "$0.00 MXN";
+
+      const items = itemsStr.split('|');
+      const steps = stepsStr.split('|');
+
+      document.getElementById('modalIngredients').innerHTML = items.map(i => `<li>• ${i}</li>`).join('');
+      document.getElementById('modalSteps').innerHTML = steps.map(s => `<li>${s}</li>`).join('');
+      document.getElementById('recipeModal').classList.remove('hidden');
+    }
+
+    function closeRecipeModal() {
+      document.getElementById('recipeModal').classList.add('hidden');
+    }
+
+    function selectDay(btn, day) {
+      document.querySelectorAll('.day-btn').forEach(b => {
+        b.classList.remove('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
+        b.classList.add('bg-white', 'text-slate-600');
+        const span = b.querySelector('span');
+        if (span) span.className = 'block text-[10px] text-slate-400 font-medium';
+      });
+      btn.classList.remove('bg-white', 'text-slate-600');
+      btn.classList.add('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
+      const span = btn.querySelector('span');
+      if (span) span.className = 'block text-[10px] text-emerald-100 font-medium';
+    }
+
+    function randomizeMenu() {
+      const meals = [
+        { d: "Omelette de espinacas y queso panela", c: "Pollo a la plancha con puré de papa y ensalada", n: "Tacos de atún a la mexicana" },
+        { d: "Licuado de avena, plátano y canela con pan tostado", c: "Lentejas caseras con huevo cocido y arroz", n: "Molletes con queso y pico de gallo" },
+        { d: "Huevos revueltos con frijol y tortillas", c: "Pechuga asada con verduras salteadas en comal", n: "Quesadilla doble con aguacate" }
+      ];
+      const pick = meals[Math.floor(Math.random() * meals.length)];
+      document.getElementById('weeklyMealsContainer').innerHTML = `
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 animate-in fade-in">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-amber-600 uppercase">☀️ Desayuno</span>
+            <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">8 min • $22 MXN</span>
+          </div>
+          <h4 class="font-bold text-slate-800 text-sm">${pick.d}</h4>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 animate-in fade-in">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-600 uppercase">🍲 Comida</span>
+            <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">15 min • $38 MXN</span>
+          </div>
+          <h4 class="font-bold text-slate-800 text-sm">${pick.c}</h4>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2 animate-in fade-in">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-teal-600 uppercase">🌙 Cena</span>
+            <span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">10 min • $24 MXN</span>
+          </div>
+          <h4 class="font-bold text-slate-800 text-sm">${pick.n}</h4>
+        </div>
+      `;
+    }
+
+    function sendNutriQuestion() {
+      const input = document.getElementById('nutriQuestionInput');
+      if (!input.value.trim()) return;
+      input.value = '';
+      const notice = document.getElementById('nutriReplyNotice');
+      notice.classList.remove('hidden');
+      setTimeout(() => {
+        notice.classList.add('hidden');
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
