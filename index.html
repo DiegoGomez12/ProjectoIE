@@ -33,9 +33,11 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -65,6 +67,30 @@
       0% { top: 0%; }
       50% { top: 80%; }
       100% { top: 0%; }
+    }
+    /* Smooth Native-like Tab Transition */
+    .tab-view {
+      animation: tabSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes tabSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    /* Shimmer Skeleton Animation */
+    @keyframes shimmerAnim {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .shimmer-card {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmerAnim 1.4s infinite;
     }
   </style>
 </head>
@@ -614,12 +640,13 @@
             <!-- Message History Container -->
             <div id="chatMessagesContainer" class="space-y-2 max-h-52 overflow-y-auto no-scrollbar p-1">
               <!-- Initial verified message from doctor -->
-              <div class="flex items-start space-x-2">
+              <div class="flex items-start space-x-2 animate-in fade-in">
                 <div class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 text-[10px] flex items-center justify-center font-bold flex-shrink-0">
                   SR
                 </div>
-                <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed">
-                  Hola Alfonso, revisé tu registro. Vas excelente manteniendo tus horarios de desayuno. ¿Tienes alguna duda de tu menú o viste algún mito que quieras aclarar?
+                <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed space-y-1">
+                  <p>Hola Alfonso, revisé tu registro. Vas excelente manteniendo tus horarios de desayuno. ¿Tienes alguna duda de tu menú o viste algún mito que quieras aclarar?</p>
+                  <div class="text-[9px] text-slate-400 text-right">Hoy 10:15 AM</div>
                 </div>
               </div>
             </div>
@@ -700,11 +727,23 @@
             </div>
           </div>
 
-          <!-- Working Kitchen Cooking Timer -->
+          <!-- Working Kitchen Cooking Timer with Circular Animated Ring -->
           <div class="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-3 flex items-center justify-between">
-            <div>
-              <span class="text-[9px] uppercase font-bold text-emerald-800">Temporizador de Cocina</span>
-              <div id="kitchenTimerDisplay" class="text-xl font-mono font-black text-emerald-700">10:00</div>
+            <div class="flex items-center space-x-3">
+              <!-- Circular SVG Progress Ring -->
+              <div class="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
+                <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" stroke="#d1fae5" stroke-width="4" fill="transparent" />
+                  <circle id="timerRingProgress" cx="24" cy="24" r="20" stroke="#059669" stroke-width="4"
+                          stroke-dasharray="125.66" stroke-dashoffset="0" stroke-linecap="round" fill="transparent"
+                          class="transition-all duration-1000 ease-linear" />
+                </svg>
+                <span id="kitchenTimerDisplay" class="absolute text-[11px] font-mono font-black text-emerald-800">10:00</span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase font-bold text-emerald-800 block">Temporizador de Cocina</span>
+                <span id="timerStatusLabel" class="text-[10px] text-emerald-600 font-medium">Listo para iniciar</span>
+              </div>
             </div>
             <div class="flex items-center space-x-1.5">
               <button id="btnTimerToggle" onclick="toggleKitchenTimer()" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition">
@@ -978,16 +1017,39 @@
       }, 2400);
     }
 
-    // ================= TAB NAVIGATION =================
+    // ================= CELEBRATION CONFETTI =================
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 55,
+          spread: 70,
+          origin: { y: 0.65 },
+          colors: ['#10b981', '#34d399', '#f59e0b', '#3b82f6', '#ec4899']
+        });
+      }
+    }
+
+    function getCurrentTimeStr() {
+      return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    // ================= TAB NAVIGATION (Smooth Slide Transition) =================
     function switchTab(tabId) {
       const tabs = ['hoy', 'menu', 'refri', 'super', 'nutri'];
       tabs.forEach(t => {
         const el = document.getElementById('tab-' + t);
-        if (el) el.classList.add('hidden');
+        if (el) {
+          el.classList.add('hidden');
+          el.classList.remove('tab-view');
+        }
       });
 
       const activeSection = document.getElementById('tab-' + tabId);
-      if (activeSection) activeSection.classList.remove('hidden');
+      if (activeSection) {
+        activeSection.classList.remove('hidden');
+        void activeSection.offsetWidth; // Trigger reflow for smooth animation
+        activeSection.classList.add('tab-view');
+      }
 
       document.querySelectorAll('.nav-item').forEach(btn => {
         const match = btn.getAttribute('data-tab') === tabId;
@@ -1005,6 +1067,7 @@
       if (tabId === 'refri') updateRefriCount();
 
       playSound('pop');
+      if (navigator.vibrate) navigator.vibrate(25);
       window.scrollTo(0, 0);
     }
 
@@ -1047,15 +1110,16 @@
       APP_STATE.mealsDone[mealKey] = !APP_STATE.mealsDone[mealKey];
       if (APP_STATE.mealsDone[mealKey]) {
         playSound('success');
+        if (navigator.vibrate) navigator.vibrate(40);
         showToast(`🍽️ ¡${mealKey.toUpperCase()} registrado!`, '✅');
       } else {
         playSound('pop');
       }
-      updateMealsProgressUI();
+      updateMealsProgressUI(true);
       saveState();
     }
 
-    function updateMealsProgressUI() {
+    function updateMealsProgressUI(userInitiated = false) {
       const keys = ['desayuno', 'comida', 'cena'];
       let doneCount = 0;
       keys.forEach(k => {
@@ -1082,6 +1146,14 @@
       const pct = Math.round((doneCount / 3) * 100);
       document.getElementById('mealsProgressLabel').innerText = `${doneCount} de 3 comidas hechas`;
       document.getElementById('mealsProgressBar').style.width = `${pct}%`;
+
+      if (doneCount === 3 && userInitiated) {
+        setTimeout(() => {
+          triggerConfetti();
+          showToast('🎉 ¡Meta cumplida! 3 de 3 comidas registradas', '✨');
+          playSound('success');
+        }, 250);
+      }
     }
 
     // ================= WEEKLY MENU SYSTEM =================
@@ -1262,6 +1334,26 @@
       btn.innerHTML = `<span class="animate-spin mr-1">⏳</span> Analizando combinaciones...`;
       btn.disabled = true;
 
+      // Render Shimmer Skeleton Card
+      const container = document.getElementById('refriResult');
+      container.innerHTML = `
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-200/90 shadow-sm space-y-3 animate-in fade-in">
+          <div class="flex items-center justify-between">
+            <div class="h-3.5 w-28 rounded-md shimmer-card"></div>
+            <div class="h-3.5 w-12 rounded-md shimmer-card"></div>
+          </div>
+          <div class="h-4.5 w-3/4 rounded-md shimmer-card"></div>
+          <div class="space-y-1.5 p-2.5 bg-slate-50 rounded-xl">
+            <div class="h-2.5 w-5/6 rounded shimmer-card"></div>
+            <div class="h-2.5 w-4/6 rounded shimmer-card"></div>
+          </div>
+          <div class="flex justify-between items-center pt-1">
+            <div class="h-3.5 w-24 rounded-md shimmer-card"></div>
+            <div class="h-3.5 w-20 rounded-md shimmer-card"></div>
+          </div>
+        </div>
+      `;
+
       setTimeout(() => {
         btn.innerHTML = originalHTML;
         btn.disabled = false;
@@ -1269,12 +1361,11 @@
         const activeElements = Array.from(document.querySelectorAll('.ing-pill.active')).map(el => el.getAttribute('data-ing'));
         let matched = REFRI_RECIPES.find(r => r.req.every(req => activeElements.includes(req))) || REFRI_RECIPES[0];
         
-        const container = document.getElementById('refriResult');
         container.innerHTML = `
           <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 animate-pulse">
             <span>✨</span> ¡Receta Optimizada para tus Ingredientes!
           </h4>
-          <div class="bg-white rounded-2xl p-3.5 border-2 border-emerald-500 shadow-sm space-y-2.5 transition">
+          <div class="bg-white rounded-2xl p-3.5 border-2 border-emerald-500 shadow-sm space-y-2.5 transition animate-in fade-in">
             <div class="flex items-start justify-between">
               <div>
                 <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Compatibilidad: 98%</span>
@@ -1298,7 +1389,7 @@
         `;
         playSound('success');
         showToast('🍲 ¡Receta generada con tus sobras!', '✨');
-      }, 450);
+      }, 550);
     }
 
     // ================= SUPERMARKET & BUDGET =================
@@ -1441,12 +1532,21 @@
       if (!query) return;
 
       playSound('pop');
+      if (navigator.vibrate) navigator.vibrate(30);
+
+      const msgCheckId = 'check_' + Date.now();
+      const userTime = getCurrentTimeStr();
+
       const container = document.getElementById('chatMessagesContainer');
       const userBubble = document.createElement('div');
-      userBubble.className = 'flex items-start justify-end space-x-2';
+      userBubble.className = 'flex items-start justify-end space-x-2 animate-in fade-in';
       userBubble.innerHTML = `
-        <div class="bg-emerald-600 text-white text-xs p-2.5 rounded-2xl rounded-tr-sm max-w-[85%] leading-relaxed shadow-sm">
-          ${query}
+        <div class="bg-emerald-600 text-white text-xs p-2.5 rounded-2xl rounded-tr-sm max-w-[85%] leading-relaxed shadow-sm space-y-1">
+          <p>${query}</p>
+          <div class="flex items-center justify-end space-x-1 text-[9px] text-emerald-200">
+            <span>${userTime}</span>
+            <span id="${msgCheckId}" class="font-bold tracking-tighter">✓✓</span>
+          </div>
         </div>
       `;
       container.appendChild(userBubble);
@@ -1459,6 +1559,12 @@
       setTimeout(() => {
         typing.classList.add('hidden');
         playSound('pop');
+
+        // Turn user checkmark to double blue check
+        const checkEl = document.getElementById(msgCheckId);
+        if (checkEl) {
+          checkEl.className = 'font-bold tracking-tighter text-sky-300';
+        }
 
         let reply = "Hola Alfonso, ¡excelente pregunta! Recuerda que no necesitas recetas complejas ni eliminar alimentos para tener energía en la universidad. Cuidar tus horarios y dormir bien es el 80% del éxito.";
         const qLower = query.toLowerCase();
@@ -1473,14 +1579,16 @@
           reply = "El atún y los huevos son las proteínas más completas y económicas para estudiantes. Consumirlos 1 o 2 veces al día cubre tus requerimientos sin gastar de más.";
         }
 
+        const docTime = getCurrentTimeStr();
         const docBubble = document.createElement('div');
         docBubble.className = 'flex items-start space-x-2 animate-in fade-in';
         docBubble.innerHTML = `
           <div class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 text-[10px] flex items-center justify-center font-bold flex-shrink-0">
             SR
           </div>
-          <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed">
-            ${reply}
+          <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed space-y-1">
+            <p>${reply}</p>
+            <div class="text-[9px] text-slate-400 text-right">${docTime}</div>
           </div>
         `;
         container.appendChild(docBubble);
@@ -1554,6 +1662,8 @@
     let currentGuideStepIndex = 0;
     let isGuideMode = false;
 
+    let currentRecipeTimerTotal = 600;
+
     function openRecipeModal(key) {
       const data = recipesDB[key];
       if (!data) return;
@@ -1571,7 +1681,8 @@
       const stepsList = document.getElementById('modalSteps');
       stepsList.innerHTML = data.steps.map(s => `<li>${s}</li>`).join('');
 
-      kitchenTimerRemaining = data.timerSecs || 600;
+      currentRecipeTimerTotal = data.timerSecs || 600;
+      kitchenTimerRemaining = currentRecipeTimerTotal;
       updateKitchenTimerDisplay();
       resetKitchenTimer();
 
@@ -1599,6 +1710,7 @@
       document.getElementById('modalIngredients').innerHTML = items.map(i => `<li>• ${i}</li>`).join('');
       document.getElementById('modalSteps').innerHTML = steps.map(s => `<li>${s}</li>`).join('');
 
+      currentRecipeTimerTotal = 600;
       kitchenTimerRemaining = 600;
       updateKitchenTimerDisplay();
       resetKitchenTimer();
@@ -1650,6 +1762,7 @@
         playSound('pop');
       } else {
         playSound('success');
+        triggerConfetti();
         showToast('🎉 ¡Completaste todos los pasos de la receta!');
       }
     }
@@ -1667,20 +1780,34 @@
       const secs = kitchenTimerRemaining % 60;
       document.getElementById('kitchenTimerDisplay').innerText = 
         `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      // Update Circular SVG Ring
+      const ring = document.getElementById('timerRingProgress');
+      if (ring) {
+        const total = currentRecipeTimerTotal || 600;
+        const fraction = total > 0 ? (kitchenTimerRemaining / total) : 0;
+        const circumference = 125.66;
+        const offset = circumference * (1 - fraction);
+        ring.style.strokeDashoffset = offset;
+      }
     }
 
     function toggleKitchenTimer() {
       const btn = document.getElementById('btnTimerToggle');
+      const status = document.getElementById('timerStatusLabel');
+
       if (timerRunning) {
         clearInterval(kitchenTimerInterval);
         timerRunning = false;
         btn.innerText = 'Reanudar';
         btn.className = 'bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+        if (status) status.innerText = '⏸️ En pausa';
         playSound('pop');
       } else {
         timerRunning = true;
         btn.innerText = 'Pausar';
         btn.className = 'bg-rose-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+        if (status) status.innerText = '🔥 Cocinando a fuego medio...';
         playSound('pop');
         kitchenTimerInterval = setInterval(() => {
           if (kitchenTimerRemaining > 0) {
@@ -1691,7 +1818,9 @@
             timerRunning = false;
             btn.innerText = '¡Listo!';
             btn.className = 'bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+            if (status) status.innerText = '✨ ¡Comida lista!';
             playSound('alert');
+            triggerConfetti();
             showToast('⏰ ¡Tiempo terminado! Tu comida está lista', '🔔');
           }
         }, 1000);
@@ -1702,10 +1831,13 @@
       if (kitchenTimerInterval) clearInterval(kitchenTimerInterval);
       timerRunning = false;
       const btn = document.getElementById('btnTimerToggle');
+      const status = document.getElementById('timerStatusLabel');
       if (btn) {
         btn.innerText = 'Iniciar';
         btn.className = 'bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition';
       }
+      if (status) status.innerText = 'Listo para iniciar';
+      kitchenTimerRemaining = currentRecipeTimerTotal || 600;
       updateKitchenTimerDisplay();
     }
 
