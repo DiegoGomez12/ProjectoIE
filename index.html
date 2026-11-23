@@ -37,7 +37,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -60,12 +60,12 @@
       animation: pulse-subtle 2.5s infinite ease-in-out;
     }
     .scanner-laser {
-      background: linear-gradient(180deg, rgba(16, 185, 129, 0) 0%, rgba(16, 185, 129, 0.8) 50%, rgba(16, 185, 129, 0) 100%);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0) 0%, rgba(16, 185, 129, 0.85) 50%, rgba(16, 185, 129, 0) 100%);
       animation: scan 2s infinite ease-in-out;
     }
     @keyframes scan {
       0% { top: 0%; }
-      50% { top: 80%; }
+      50% { top: 82%; }
       100% { top: 0%; }
     }
     /* Smooth Native-like Tab Transition */
@@ -94,89 +94,110 @@
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-800 min-h-screen flex items-center justify-center p-0 md:p-6 antialiased selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased selection:bg-emerald-500 selection:text-white">
 
-  <!-- Desktop Presentation Wrapper: Shows Mockup + QR Info on Desktop, full screen on Mobile -->
-  <div class="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8">
-    
-    <!-- DESKTOP PRESENTATION SIDEBAR (Visible only on Large Screens) -->
-    <div class="hidden lg:flex flex-col max-w-md text-white space-y-5 p-6">
-      <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-          <i data-lucide="leaf" class="w-7 h-7"></i>
-        </div>
-        <div>
-          <h1 class="text-3xl font-extrabold tracking-tight">VIVE<span class="text-emerald-400">+</span></h1>
-          <p class="text-xs uppercase tracking-wider text-emerald-300 font-semibold">Proyecto de Innovación Universitaria</p>
-        </div>
-      </div>
+  <!-- FULL RESPONSIVE WEB APP SHELL (Desktop Sidebar + Spacious Content | Mobile Full Screen + Bottom Nav) -->
+  <div class="min-h-screen w-full flex">
 
-      <div class="space-y-2">
-        <h2 class="text-lg font-bold text-slate-100">Prototipo Interactivo de Alta Fidelidad</h2>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          Diseñado para resolver los tres grandes problemas del estudiante: 
-          <span class="text-emerald-300 font-medium">falta de tiempo</span>, 
-          <span class="text-emerald-300 font-medium">presupuesto ajustado</span> y 
-          <span class="text-emerald-300 font-medium">desinformación nutricional</span>.
-        </p>
-      </div>
-
-      <!-- Live QR Code Card for presentation -->
-      <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
-        <div class="flex items-center justify-between mb-2.5">
-          <div class="flex items-center space-x-2">
-            <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
-            <span class="text-xs font-semibold text-slate-200">Escanear con tu celular</span>
+    <!-- ================= DESKTOP LEFT SIDEBAR (Visible on lg+) ================= -->
+    <aside class="hidden lg:flex w-64 xl:w-72 flex-shrink-0 bg-white border-r border-slate-200/80 flex-col justify-between h-screen sticky top-0 p-5 z-30">
+      <div class="space-y-6">
+        <!-- Brand Logo -->
+        <div class="flex items-center space-x-3 px-2">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-600/20">
+            <i data-lucide="leaf" class="w-5 h-5"></i>
           </div>
-          <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">EN VIVO</span>
-        </div>
-        
-        <div class="flex items-center gap-3.5">
-          <div class="bg-white p-2 rounded-xl shadow">
-            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https://diegogomez12.github.io/ProjectoIE/" alt="QR VIVE+" class="w-24 h-24 object-contain">
-          </div>
-          <div class="space-y-1.5 text-xs text-slate-400">
-            <p class="text-[11px] leading-tight">Apunta la cámara de tu celular para interactuar en tiempo real en tu navegador móvil.</p>
-            <div class="text-[11px] text-emerald-400 font-mono break-all font-semibold" id="qrUrlLabel">viveplus-app.demo</div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="font-extrabold text-xl text-slate-800 tracking-tight">VIVE<span class="text-emerald-600">+</span></span>
+              <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">CAMPUS</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-medium">Nutrición Universitaria</p>
           </div>
         </div>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="space-y-1.5">
+          <button onclick="switchTab('hoy')" data-tab="hoy" class="desktop-nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold bg-emerald-50 text-emerald-700 transition">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span>Hoy</span>
+          </button>
+
+          <button onclick="switchTab('menu')" data-tab="menu" class="desktop-nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <span>Menú Semanal</span>
+          </button>
+
+          <button onclick="switchTab('refri')" data-tab="refri" class="desktop-nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition">
+            <div class="flex items-center space-x-3">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+              <span>Rescate de Refri</span>
+            </div>
+            <span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-md">$0</span>
+          </button>
+
+          <button onclick="switchTab('super')" data-tab="super" class="desktop-nav-item w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+            <span>Lista de Súper</span>
+          </button>
+
+          <button onclick="switchTab('nutri')" data-tab="nutri" class="desktop-nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+            <div class="flex items-center space-x-3">
+              <i data-lucide="stethoscope" class="w-5 h-5"></i>
+              <span>Nutriólogo</span>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </button>
+        </nav>
+
+        <!-- Quick Tools Section -->
+        <div class="pt-4 border-t border-slate-100 space-y-2">
+          <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Herramientas</p>
+          <button onclick="openScannerModal()" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold text-emerald-700 bg-emerald-50/70 border border-emerald-200/70 hover:bg-emerald-100/80 active:scale-[0.98] transition">
+            <i data-lucide="scan-barcode" class="w-5 h-5"></i>
+            <span>Semáforo de Alimentos</span>
+          </button>
+
+          <button onclick="openQrModal()" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-100 active:scale-[0.98] transition">
+            <i data-lucide="qr-code" class="w-5 h-5 text-slate-500"></i>
+            <span>Abrir en Celular (QR)</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Key Value Propositions Badges -->
-      <div class="grid grid-cols-2 gap-2.5 text-xs text-slate-300">
-        <div class="flex items-center space-x-2 bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/50">
-          <i data-lucide="clock" class="w-4 h-4 text-emerald-400"></i>
-          <span>Recetas &lt;15 min</span>
+      <!-- Bottom Student Profile Card -->
+      <div class="space-y-3 pt-4 border-t border-slate-100">
+        <div onclick="openImpactModal()" class="cursor-pointer bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-3.5 text-white shadow-md shadow-emerald-600/15 hover:brightness-105 transition">
+          <div class="flex items-center justify-between text-[11px] text-emerald-100 font-semibold">
+            <span>Ahorro este mes</span>
+            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+          </div>
+          <div class="text-xl font-extrabold mt-0.5">$340 MXN</div>
+          <p class="text-[10px] text-emerald-100/90 mt-0.5">1.4 kg rescatados • Ver reporte →</p>
         </div>
-        <div class="flex items-center space-x-2 bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/50">
-          <i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-400"></i>
-          <span>Ajustado al súper</span>
-        </div>
-        <div class="flex items-center space-x-2 bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/50">
-          <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
-          <span>Rescate de Refri</span>
-        </div>
-        <div class="flex items-center space-x-2 bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/50">
-          <i data-lucide="scan-barcode" class="w-4 h-4 text-emerald-400"></i>
-          <span>Semáforo Nutricional</span>
+
+        <div onclick="switchTab('nutri')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center border border-emerald-200">
+              AL
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-800">Alfonso</p>
+              <p class="text-[10px] text-slate-400">Plan UNI-VIVE26</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg">🔥 4d</span>
         </div>
       </div>
+    </aside>
 
-      <!-- Interactive Controls Guide -->
-      <div class="text-[11px] text-slate-400 bg-slate-800/30 p-3 rounded-xl border border-slate-700/40 space-y-1">
-        <p class="font-semibold text-slate-300">💡 Pruebas recomendadas en la demo:</p>
-        <p>• Marca comidas como hechas para ver la barra diaria.</p>
-        <p>• Abre una receta y prueba el temporizador de cocina.</p>
-        <p>• Prueba el escáner de snacks o hazle una pregunta a la nutrióloga.</p>
-      </div>
-    </div>
+    <!-- ================= MAIN WORKSPACE AREA ================= -->
+    <div class="flex-1 min-w-0 flex flex-col min-h-screen">
 
-    <!-- MOBILE PHONE FRAME (The Actual Web App) -->
-    <div class="w-full max-w-[420px] h-[100dvh] md:h-[840px] bg-slate-50 md:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden border-0 md:border-[10px] md:border-slate-800">
-      
-      <!-- Top Mobile Status / App Header -->
-      <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 pt-4 pb-3 flex items-center justify-between z-20">
-        <div class="flex items-center space-x-2">
+      <!-- TOP APP HEADER (Mobile Logo + Desktop Context Header) -->
+      <header class="sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-200/70 px-4 lg:px-8 py-3 lg:py-4 flex items-center justify-between z-20">
+        <!-- Mobile Brand (Hidden on Desktop) -->
+        <div class="flex lg:hidden items-center space-x-2">
           <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-600/20">
             <i data-lucide="leaf" class="w-4 h-4"></i>
           </div>
@@ -189,255 +210,300 @@
           </div>
         </div>
 
-        <div class="flex items-center space-x-1.5">
+        <!-- Desktop Dynamic Page Title (Hidden on Mobile) -->
+        <div class="hidden lg:block">
+          <h1 id="desktopPageTitle" class="text-xl font-extrabold text-slate-800 tracking-tight">Resumen de Hoy</h1>
+          <p id="desktopPageSubtitle" class="text-xs text-slate-500">Miércoles, 18 de Nov • Proyecto de Innovación Universitaria</p>
+        </div>
+
+        <!-- Right Action Controls -->
+        <div class="flex items-center space-x-2">
           <!-- Sound Effects Toggle Button -->
-          <button id="btnSoundToggle" onclick="toggleSound()" title="Sonidos de la app" class="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 active:scale-90 transition">
-            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+          <button id="btnSoundToggle" onclick="toggleSound()" title="Sonidos de la app" class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 active:scale-90 transition">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
           </button>
 
           <!-- Food Scanner Trigger Button (Yuka/Semáforo Style) -->
-          <button onclick="openScannerModal()" title="Escanear producto" class="flex items-center space-x-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-xl text-xs font-bold hover:bg-emerald-100 active:scale-95 transition">
-            <i data-lucide="scan-barcode" class="w-3.5 h-3.5"></i>
-            <span class="text-[10px]">Escanear</span>
+          <button onclick="openScannerModal()" title="Escanear producto" class="flex items-center space-x-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 lg:px-3.5 py-1.5 lg:py-2 rounded-xl text-xs font-bold hover:bg-emerald-100 active:scale-95 transition">
+            <i data-lucide="scan-barcode" class="w-4 h-4"></i>
+            <span class="text-[11px] lg:text-xs">Escanear</span>
+          </button>
+
+          <!-- Desktop QR Quick Button -->
+          <button onclick="openQrModal()" title="Ver código QR para celular" class="hidden sm:flex items-center space-x-1.5 bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 lg:py-2 rounded-xl text-xs font-bold hover:bg-slate-200 active:scale-95 transition">
+            <i data-lucide="qr-code" class="w-4 h-4"></i>
+            <span class="hidden md:inline">QR Móvil</span>
           </button>
 
           <!-- Streak Indicator -->
-          <div onclick="showToast('🔥 ¡Llevas 4 días de hábitos constantes!')" class="cursor-pointer flex items-center space-x-1 bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition">
+          <div onclick="showToast('🔥 ¡Llevas 4 días de hábitos constantes!')" class="cursor-pointer flex items-center space-x-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1.5 lg:py-2 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition">
             <span>🔥</span>
             <span>4d</span>
           </div>
 
-          <!-- Profile / Clinic Badge -->
-          <button onclick="switchTab('nutri')" class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
-            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+          <!-- Mobile Profile Badge -->
+          <button onclick="switchTab('nutri')" class="lg:hidden w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
+            <i data-lucide="user" class="w-4 h-4"></i>
           </button>
         </div>
       </header>
 
       <!-- FLOATING TOAST NOTIFICATION -->
-      <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2">
-        <div class="bg-slate-900/95 backdrop-blur-md text-white text-xs px-3.5 py-2 rounded-2xl shadow-xl flex items-center space-x-2 border border-slate-700/60 max-w-[340px]">
+      <div id="toastNotification" class="fixed top-20 left-1/2 -translate-x-1/2 z-[60] transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2">
+        <div class="bg-slate-900/95 backdrop-blur-md text-white text-xs lg:text-sm px-4 py-2.5 rounded-2xl shadow-xl flex items-center space-x-2 border border-slate-700/60 max-w-[380px]">
           <span id="toastIcon">✨</span>
           <span id="toastMessage" class="font-medium">Notificación</span>
         </div>
       </div>
 
       <!-- MAIN SCROLLABLE APP BODY -->
-      <main class="flex-1 overflow-y-auto no-scrollbar pb-24 px-4 pt-3 bg-slate-50/60">
+      <main class="flex-1 w-full max-w-6xl mx-auto px-4 lg:px-8 pt-4 lg:pt-7 pb-24 lg:pb-12">
 
         <!-- ================= TAB 1: HOY (DASHBOARD) ================= -->
-        <section id="tab-hoy" class="space-y-3.5">
-          <!-- Greeting Hero Card -->
-          <div class="bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-800 rounded-3xl p-4 text-white shadow-lg shadow-emerald-700/20 relative overflow-hidden">
-            <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+        <section id="tab-hoy" class="space-y-5 lg:space-y-6">
+          <!-- Greeting Hero Card (Expands gracefully on Desktop) -->
+          <div class="bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-800 rounded-3xl p-5 lg:p-7 text-white shadow-lg shadow-emerald-700/15 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
             
-            <div class="flex items-start justify-between">
-              <div>
-                <p class="text-[10px] uppercase tracking-wider text-emerald-200 font-semibold" id="currentDateLabel">Miércoles, 18 de Nov</p>
-                <h3 class="text-xl font-bold mt-0.5">¡Hola, Alfonso! 👋</h3>
-                <p class="text-xs text-emerald-100/90 mt-0.5 max-w-[240px]">
-                  Tienes <span class="font-semibold text-white" id="todayMealsCountText">3 comidas rápidas</span> listas para hoy.
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+              <!-- Left Greeting -->
+              <div class="space-y-1">
+                <div class="flex items-center space-x-2">
+                  <p class="text-[11px] lg:text-xs uppercase tracking-wider text-emerald-200 font-semibold" id="currentDateLabel">Miércoles, 18 de Nov</p>
+                  <span class="bg-white/15 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-bold text-white">Meta Hoy: Energía</span>
+                </div>
+                <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">¡Hola, Alfonso! 👋</h2>
+                <p class="text-xs lg:text-sm text-emerald-100/90 max-w-md">
+                  Tienes <span class="font-semibold text-white" id="todayMealsCountText">3 comidas rápidas</span> listas para hoy, adaptadas a tu presupuesto y horario de clases.
                 </p>
               </div>
-              <div class="bg-white/20 backdrop-blur-md rounded-2xl p-2 text-center">
-                <span class="block text-[9px] text-emerald-100 font-medium">Meta Hoy</span>
-                <span class="text-xs font-extrabold text-white">Energía</span>
-              </div>
-            </div>
 
-            <!-- Energy & Meals Daily Progress Bar -->
-            <div class="mt-3.5 pt-2.5 border-t border-white/15 space-y-1.5">
-              <div class="flex items-center justify-between text-xs">
-                <span class="flex items-center gap-1.5 text-emerald-100">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-                  Progreso del día:
-                </span>
-                <span id="mealsProgressLabel" class="font-bold text-white">1 de 3 comidas hechas</span>
-              </div>
-              <div class="w-full h-2 bg-black/20 rounded-full overflow-hidden">
-                <div id="mealsProgressBar" class="h-full bg-emerald-300 rounded-full transition-all duration-500" style="width: 33%"></div>
-              </div>
-            </div>
+              <!-- Right Progress & Budget Summary -->
+              <div class="lg:w-96 bg-black/15 backdrop-blur-md rounded-2xl p-4 border border-white/10 space-y-3">
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="flex items-center gap-1.5 text-emerald-100">
+                      <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                      Progreso del día:
+                    </span>
+                    <span id="mealsProgressLabel" class="font-bold text-white">1 de 3 comidas hechas</span>
+                  </div>
+                  <div class="w-full h-2.5 bg-black/25 rounded-full overflow-hidden">
+                    <div id="mealsProgressBar" class="h-full bg-emerald-300 rounded-full transition-all duration-500" style="width: 33%"></div>
+                  </div>
+                </div>
 
-            <!-- Mini Metrics Row (Budget + Monthly Student Savings) -->
-            <div class="mt-2.5 flex items-center justify-between text-[11px] pt-2 border-t border-white/10">
-              <span class="flex items-center gap-1 text-emerald-100">
-                <i data-lucide="wallet" class="w-3 h-3"></i>
-                Semana: <strong class="text-white ml-0.5" id="heroBudgetStatus">$485 / $600 MXN</strong>
-              </span>
-              <span onclick="openImpactModal()" class="cursor-pointer flex items-center gap-1 text-emerald-200 hover:text-white font-medium underline">
-                <span>💰 Ahorro mensual</span>
-              </span>
+                <div class="flex items-center justify-between text-xs pt-2 border-t border-white/10">
+                  <span class="flex items-center gap-1.5 text-emerald-100">
+                    <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                    Semana: <strong class="text-white" id="heroBudgetStatus">$485 / $600 MXN</strong>
+                  </span>
+                  <span onclick="openImpactModal()" class="cursor-pointer flex items-center gap-1 text-emerald-200 hover:text-white font-semibold underline">
+                    <span>💰 Ahorro mensual</span>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Quick Action: Express Fridge Rescue Banner -->
-          <div onclick="switchTab('refri')" class="cursor-pointer bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-2xl p-3 flex items-center justify-between hover:bg-amber-500/15 transition active:scale-[0.99]">
-            <div class="flex items-center space-x-3">
-              <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-base shadow-sm">
-                🍳
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-slate-800">¿Qué cocino con lo que tengo?</h4>
-                <p class="text-[10px] text-slate-500">Rescata comida de tu refri en &lt;15 min • $0 extra</p>
-              </div>
-            </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-amber-700"></i>
-          </div>
+          <!-- Two-Column Responsive Dashboard Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
 
-          <!-- Water Intake Tracker (Interactive with Glass fill animation) -->
-          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2.5">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2.5">
-                <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
-                  <i data-lucide="droplet" class="w-4 h-4 fill-blue-500"></i>
+            <!-- LEFT / MAIN COLUMN: Today's Meals (7 cols on lg, 8 on xl) -->
+            <div class="lg:col-span-7 xl:col-span-8 space-y-3.5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm lg:text-base font-bold text-slate-800 flex items-center gap-2">
+                  <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+                  Menú de Hoy
+                </h3>
+                <button onclick="switchTab('menu')" class="text-xs lg:text-sm text-emerald-600 font-semibold hover:underline">Ver semana completa →</button>
+              </div>
+
+              <!-- Meal Card 1: Desayuno -->
+              <div id="mealCard-desayuno" class="bg-white rounded-2xl p-3.5 lg:p-5 border border-slate-200/70 shadow-sm flex items-center justify-between hover:border-emerald-300 hover:shadow-md transition">
+                <div class="flex items-center space-x-3 lg:space-x-4">
+                  <button onclick="toggleMealDone('desayuno')" title="Marcar como comida" class="meal-check-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white flex items-center justify-center transition active:scale-90 flex-shrink-0">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </button>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[10px] lg:text-xs font-bold text-amber-600 uppercase tracking-wider">☀️ Desayuno (7:30 AM)</span>
+                      <span id="badge-desayuno" class="text-[9px] lg:text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Consumido</span>
+                    </div>
+                    <h4 class="text-xs lg:text-base font-bold text-slate-800 mt-0.5">Avena Express con Plátano y Crema de Cacahuate</h4>
+                    <div class="flex items-center gap-2.5 mt-1 text-[11px] lg:text-xs text-slate-500">
+                      <span>⏱️ 5 min</span>
+                      <span>•</span>
+                      <span class="text-emerald-600 font-semibold">~$22 MXN</span>
+                      <span class="hidden sm:inline">•</span>
+                      <span class="hidden sm:inline text-slate-400">1 tazón</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h4 class="text-xs font-bold text-slate-800">Hidratación Diaria</h4>
-                  <p class="text-[11px] text-slate-500"><span id="waterCount" class="font-semibold text-blue-600">5</span> de 8 vasos tomados</p>
-                </div>
-              </div>
-              <div class="flex items-center space-x-1.5">
-                <button onclick="updateWater(-1)" class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 active:scale-90 transition">-</button>
-                <button onclick="updateWater(1)" class="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/30 hover:bg-blue-600 active:scale-90 transition">+</button>
-              </div>
-            </div>
-            <!-- Visual Water Glasses Grid -->
-            <div class="grid grid-cols-8 gap-1 pt-0.5" id="waterGlassesContainer">
-              <!-- Rendered via JS -->
-            </div>
-          </div>
-
-          <!-- Today's Meals Section -->
-          <div class="space-y-2.5">
-            <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-600"></i>
-                Menú de Hoy
-              </h3>
-              <button onclick="switchTab('menu')" class="text-[11px] text-emerald-600 font-semibold hover:underline">Ver semana completa</button>
-            </div>
-
-            <!-- Meal Card 1: Desayuno -->
-            <div id="mealCard-desayuno" class="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
-              <div class="flex items-center space-x-2.5">
-                <button onclick="toggleMealDone('desayuno')" title="Marcar como comida" class="meal-check-btn w-6 h-6 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white flex items-center justify-center transition active:scale-90 flex-shrink-0">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <button onclick="openRecipeModal('avena')" class="text-xs lg:text-sm font-bold bg-slate-100 text-slate-700 px-3 lg:px-4 py-2 rounded-xl hover:bg-emerald-600 hover:text-white transition flex-shrink-0 ml-2">
+                  Ver receta
                 </button>
-                <div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-[9px] font-bold text-amber-600 uppercase tracking-wider">Desayuno (7:30 AM)</span>
-                    <span id="badge-desayuno" class="text-[8px] bg-emerald-100 text-emerald-800 px-1.5 rounded font-bold">Consumido</span>
-                  </div>
-                  <h4 class="text-xs font-bold text-slate-800">Avena Express con Plátano y Crema de Cacahuate</h4>
-                  <div class="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
-                    <span>⏱️ 5 min</span>
-                    <span>•</span>
-                    <span class="text-emerald-600 font-medium">~$22 MXN</span>
+              </div>
+
+              <!-- Meal Card 2: Comida -->
+              <div id="mealCard-comida" class="bg-white rounded-2xl p-3.5 lg:p-5 border border-slate-200/70 shadow-sm flex items-center justify-between hover:border-emerald-300 hover:shadow-md transition">
+                <div class="flex items-center space-x-3 lg:space-x-4">
+                  <button onclick="toggleMealDone('comida')" title="Marcar como comida" class="meal-check-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90 flex-shrink-0">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </button>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[10px] lg:text-xs font-bold text-emerald-600 uppercase tracking-wider">🍲 Comida (2:00 PM)</span>
+                      <span id="badge-comida" class="hidden text-[9px] lg:text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Consumido</span>
+                    </div>
+                    <h4 class="text-xs lg:text-base font-bold text-slate-800 mt-0.5">Bowl de Atún, Arroz y Aguacate</h4>
+                    <div class="flex items-center gap-2.5 mt-1 text-[11px] lg:text-xs text-slate-500">
+                      <span>⏱️ 12 min</span>
+                      <span>•</span>
+                      <span class="text-emerald-600 font-semibold">~$38 MXN</span>
+                      <span class="hidden sm:inline">•</span>
+                      <span class="hidden sm:inline text-slate-400">Alto en proteína</span>
+                    </div>
                   </div>
                 </div>
+                <button onclick="openRecipeModal('atun')" class="text-xs lg:text-sm font-bold bg-slate-100 text-slate-700 px-3 lg:px-4 py-2 rounded-xl hover:bg-emerald-600 hover:text-white transition flex-shrink-0 ml-2">
+                  Ver receta
+                </button>
               </div>
-              <button onclick="openRecipeModal('avena')" class="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition flex-shrink-0 ml-1">
-                Ver
-              </button>
+
+              <!-- Meal Card 3: Cena -->
+              <div id="mealCard-cena" class="bg-white rounded-2xl p-3.5 lg:p-5 border border-slate-200/70 shadow-sm flex items-center justify-between hover:border-emerald-300 hover:shadow-md transition">
+                <div class="flex items-center space-x-3 lg:space-x-4">
+                  <button onclick="toggleMealDone('cena')" title="Marcar como comida" class="meal-check-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90 flex-shrink-0">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </button>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[10px] lg:text-xs font-bold text-teal-600 uppercase tracking-wider">🌙 Cena (8:30 PM)</span>
+                      <span id="badge-cena" class="hidden text-[9px] lg:text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Consumido</span>
+                    </div>
+                    <h4 class="text-xs lg:text-base font-bold text-slate-800 mt-0.5">Quesadillas en Comal con Panela y Frijol</h4>
+                    <div class="flex items-center gap-2.5 mt-1 text-[11px] lg:text-xs text-slate-500">
+                      <span>⏱️ 10 min</span>
+                      <span>•</span>
+                      <span class="text-emerald-600 font-semibold">~$25 MXN</span>
+                      <span class="hidden sm:inline">•</span>
+                      <span class="hidden sm:inline text-slate-400">1 sartén</span>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="openRecipeModal('quesadillas')" class="text-xs lg:text-sm font-bold bg-slate-100 text-slate-700 px-3 lg:px-4 py-2 rounded-xl hover:bg-emerald-600 hover:text-white transition flex-shrink-0 ml-2">
+                  Ver receta
+                </button>
+              </div>
             </div>
 
-            <!-- Meal Card 2: Comida -->
-            <div id="mealCard-comida" class="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
-              <div class="flex items-center space-x-2.5">
-                <button onclick="toggleMealDone('comida')" title="Marcar como comida" class="meal-check-btn w-6 h-6 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90 flex-shrink-0">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                </button>
-                <div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Comida (2:00 PM)</span>
-                    <span id="badge-comida" class="hidden text-[8px] bg-emerald-100 text-emerald-800 px-1.5 rounded font-bold">Consumido</span>
+            <!-- RIGHT COLUMN: Hydration, Fridge Rescue & Quick Insights (5 cols on lg, 4 on xl) -->
+            <div class="lg:col-span-5 xl:col-span-4 space-y-4">
+              <!-- Quick Action: Express Fridge Rescue Banner -->
+              <div onclick="switchTab('refri')" class="cursor-pointer bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-center justify-between hover:bg-amber-500/15 transition active:scale-[0.99]">
+                <div class="flex items-center space-x-3">
+                  <div class="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shadow-sm flex-shrink-0">
+                    🍳
                   </div>
-                  <h4 class="text-xs font-bold text-slate-800">Bowl de Atún, Arroz y Aguacate</h4>
-                  <div class="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
-                    <span>⏱️ 12 min</span>
-                    <span>•</span>
-                    <span class="text-emerald-600 font-medium">~$38 MXN</span>
+                  <div>
+                    <h4 class="text-xs lg:text-sm font-bold text-slate-800">¿Qué cocino con lo que tengo?</h4>
+                    <p class="text-[11px] text-slate-500">Rescata comida de tu refri en &lt;15 min • $0 extra</p>
                   </div>
                 </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-amber-700 flex-shrink-0"></i>
               </div>
-              <button onclick="openRecipeModal('atun')" class="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition flex-shrink-0 ml-1">
-                Ver
-              </button>
+
+              <!-- Water Intake Tracker -->
+              <div class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/70 shadow-sm space-y-3.5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                      <i data-lucide="droplet" class="w-5 h-5 fill-blue-500"></i>
+                    </div>
+                    <div>
+                      <h4 class="text-xs lg:text-sm font-bold text-slate-800">Hidratación Diaria</h4>
+                      <p class="text-xs text-slate-500"><span id="waterCount" class="font-bold text-blue-600">5</span> de 8 vasos tomados</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button onclick="updateWater(-1)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 active:scale-90 transition">-</button>
+                    <button onclick="updateWater(1)" class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/30 hover:bg-blue-600 active:scale-90 transition">+</button>
+                  </div>
+                </div>
+                <!-- Visual Water Glasses Grid -->
+                <div class="grid grid-cols-8 gap-1.5 pt-1" id="waterGlassesContainer">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+
+              <!-- Desktop Nutritionist Quick Card -->
+              <div onclick="switchTab('nutri')" class="hidden lg:block cursor-pointer bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm hover:border-emerald-300 transition space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-base">👩‍⚕️</div>
+                    <div>
+                      <h4 class="text-xs font-bold text-slate-800">Dra. Sofía Ramos</h4>
+                      <p class="text-[11px] text-emerald-600 font-medium">● En línea • Plan validado</p>
+                    </div>
+                  </div>
+                  <i data-lucide="message-circle" class="w-4 h-4 text-slate-400"></i>
+                </div>
+                <p class="text-xs text-slate-500 bg-slate-50 p-2.5 rounded-xl leading-relaxed">
+                  "¿Tienes alguna duda de tu menú o viste algún mito en redes? Escríbeme aquí."
+                </p>
+              </div>
             </div>
 
-            <!-- Meal Card 3: Cena -->
-            <div id="mealCard-cena" class="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex items-center justify-between hover:border-emerald-200 transition">
-              <div class="flex items-center space-x-2.5">
-                <button onclick="toggleMealDone('cena')" title="Marcar como comida" class="meal-check-btn w-6 h-6 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90 flex-shrink-0">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                </button>
-                <div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-[9px] font-bold text-teal-600 uppercase tracking-wider">Cena (8:30 PM)</span>
-                    <span id="badge-cena" class="hidden text-[8px] bg-emerald-100 text-emerald-800 px-1.5 rounded font-bold">Consumido</span>
-                  </div>
-                  <h4 class="text-xs font-bold text-slate-800">Quesadillas en Comal con Panela y Frijol</h4>
-                  <div class="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
-                    <span>⏱️ 10 min</span>
-                    <span>•</span>
-                    <span class="text-emerald-600 font-medium">~$25 MXN</span>
-                  </div>
-                </div>
-              </div>
-              <button onclick="openRecipeModal('quesadillas')" class="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition flex-shrink-0 ml-1">
-                Ver
-              </button>
-            </div>
           </div>
         </section>
 
         <!-- ================= TAB 2: MENÚ SEMANAL ================= -->
-        <section id="tab-menu" class="hidden space-y-3.5">
-          <div class="flex items-center justify-between">
+        <section id="tab-menu" class="hidden space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h3 class="text-sm font-bold text-slate-800">Menú Semanal Flexible</h3>
-              <p class="text-[11px] text-slate-500">Adaptado a <span id="menuBudgetSubtitle" class="font-bold text-emerald-600">$600/sem</span> y porciones estudiantiles</p>
+              <h2 class="text-base lg:text-xl font-extrabold text-slate-800">Menú Semanal Flexible</h2>
+              <p class="text-xs lg:text-sm text-slate-500">Adaptado a <span id="menuBudgetSubtitle" class="font-bold text-emerald-600">$600/sem</span> y porciones estudiantiles</p>
             </div>
-            <button onclick="randomizeCurrentDayMenu()" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1 hover:bg-emerald-100 active:scale-95 transition">
-              <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
-              Intercambiar
+            <button onclick="randomizeCurrentDayMenu()" class="self-start sm:self-auto text-xs lg:text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 hover:bg-emerald-100 active:scale-95 transition">
+              <i data-lucide="shuffle" class="w-4 h-4"></i>
+              Intercambiar día completo
             </button>
           </div>
 
-          <!-- Day Selector Carousel -->
-          <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1" id="daySelectorContainer">
-            <button onclick="changeDayView('lun', this)" class="day-btn flex-shrink-0 w-11 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
-              <span class="block text-[9px] text-slate-400 font-medium">LUN</span>16
+          <!-- Day Selector Carousel / Full Grid on Desktop -->
+          <div class="grid grid-cols-6 gap-2 lg:gap-3" id="daySelectorContainer">
+            <button onclick="changeDayView('lun', this)" class="day-btn py-2.5 lg:py-3 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs lg:text-sm font-bold hover:border-emerald-400 transition">
+              <span class="block text-[9px] lg:text-[10px] text-slate-400 font-medium">LUN</span>16
             </button>
-            <button onclick="changeDayView('mar', this)" class="day-btn flex-shrink-0 w-11 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
-              <span class="block text-[9px] text-slate-400 font-medium">MAR</span>17
+            <button onclick="changeDayView('mar', this)" class="day-btn py-2.5 lg:py-3 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs lg:text-sm font-bold hover:border-emerald-400 transition">
+              <span class="block text-[9px] lg:text-[10px] text-slate-400 font-medium">MAR</span>17
             </button>
-            <button onclick="changeDayView('mie', this)" class="day-btn flex-shrink-0 w-11 py-2 rounded-2xl text-center bg-emerald-600 text-white shadow-md shadow-emerald-600/25 text-xs font-bold">
-              <span class="block text-[9px] text-emerald-100 font-medium">MIÉ</span>18
+            <button onclick="changeDayView('mie', this)" class="day-btn py-2.5 lg:py-3 rounded-2xl text-center bg-emerald-600 text-white shadow-md shadow-emerald-600/25 text-xs lg:text-sm font-bold transition">
+              <span class="block text-[9px] lg:text-[10px] text-emerald-100 font-medium">MIÉ</span>18
             </button>
-            <button onclick="changeDayView('jue', this)" class="day-btn flex-shrink-0 w-11 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
-              <span class="block text-[9px] text-slate-400 font-medium">JUE</span>19
+            <button onclick="changeDayView('jue', this)" class="day-btn py-2.5 lg:py-3 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs lg:text-sm font-bold hover:border-emerald-400 transition">
+              <span class="block text-[9px] lg:text-[10px] text-slate-400 font-medium">JUE</span>19
             </button>
-            <button onclick="changeDayView('vie', this)" class="day-btn flex-shrink-0 w-11 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
-              <span class="block text-[9px] text-slate-400 font-medium">VIE</span>20
+            <button onclick="changeDayView('vie', this)" class="day-btn py-2.5 lg:py-3 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs lg:text-sm font-bold hover:border-emerald-400 transition">
+              <span class="block text-[9px] lg:text-[10px] text-slate-400 font-medium">VIE</span>20
             </button>
-            <button onclick="changeDayView('sab', this)" class="day-btn flex-shrink-0 w-11 py-2 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs font-bold hover:border-emerald-400">
-              <span class="block text-[9px] text-slate-400 font-medium">SÁB</span>21
+            <button onclick="changeDayView('sab', this)" class="day-btn py-2.5 lg:py-3 rounded-2xl text-center bg-white border border-slate-200 text-slate-600 text-xs lg:text-sm font-bold hover:border-emerald-400 transition">
+              <span class="block text-[9px] lg:text-[10px] text-slate-400 font-medium">SÁB</span>21
             </button>
           </div>
 
-          <!-- Weekly Meal Cards Details -->
-          <div id="weeklyMealsContainer" class="space-y-2.5">
+          <!-- Weekly Meal Cards Details (3-column grid on Desktop!) -->
+          <div id="weeklyMealsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3.5 lg:gap-5">
             <!-- Populated via renderWeeklyDay() -->
           </div>
 
           <!-- Meal Prep Tip Card -->
-          <div class="bg-emerald-50 rounded-2xl p-3 border border-emerald-100 flex items-start space-x-2.5">
-            <span class="text-lg">💡</span>
+          <div class="bg-emerald-50 rounded-2xl p-4 lg:p-5 border border-emerald-200/70 flex items-start space-x-3">
+            <span class="text-xl lg:text-2xl">💡</span>
             <div>
-              <h5 class="text-xs font-bold text-emerald-900">Hack Universitario:</h5>
-              <p class="text-[11px] text-emerald-800 mt-0.5">
+              <h5 class="text-xs lg:text-sm font-bold text-emerald-900">Hack Universitario de Meal Prep:</h5>
+              <p class="text-xs lg:text-sm text-emerald-800 mt-0.5 leading-relaxed">
                 Cuece 2 tazas de arroz el domingo por la noche. Te servirá de guarnición para 4 comidas de la semana y ahorrarás 20 minutos diarios.
               </p>
             </div>
@@ -445,234 +511,253 @@
         </section>
 
         <!-- ================= TAB 3: RESCATE DE REFRI ================= -->
-        <section id="tab-refri" class="hidden space-y-3.5">
-          <div class="bg-gradient-to-tr from-amber-500 to-orange-400 rounded-3xl p-4 text-white shadow-lg shadow-amber-500/20">
-            <div class="flex items-center space-x-1.5 text-amber-100 text-[10px] font-bold uppercase tracking-wider">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <section id="tab-refri" class="hidden space-y-5">
+          <div class="bg-gradient-to-tr from-amber-500 to-orange-400 rounded-3xl p-5 lg:p-7 text-white shadow-lg shadow-amber-500/20">
+            <div class="flex items-center space-x-1.5 text-amber-100 text-[10px] lg:text-xs font-bold uppercase tracking-wider">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
               <span>Cero Desperdicio de Alimentos</span>
             </div>
-            <h3 class="text-lg font-black mt-0.5">Rescate de Refri 🧊</h3>
-            <p class="text-xs text-amber-50 mt-0.5 leading-relaxed">
+            <h2 class="text-xl lg:text-2xl font-black mt-1">Rescate de Refri 🧊</h2>
+            <p class="text-xs lg:text-sm text-amber-50 mt-1 leading-relaxed max-w-2xl">
               Selecciona lo que tienes en tu refri o alacena y te damos una receta nutritiva en segundos sin gastar ni un peso más.
             </p>
           </div>
 
-          <!-- Ingredient Selector Pills -->
-          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2.5">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-700">Tengo en mi cocina:</span>
-              <span id="selectedCount" class="text-[11px] font-semibold text-emerald-600">3 seleccionados</span>
+          <!-- 2-Column Responsive Layout on Desktop -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+            <!-- Left: Ingredient Selector -->
+            <div class="lg:col-span-7 bg-white rounded-2xl p-4 lg:p-6 border border-slate-200/70 shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs lg:text-sm font-bold text-slate-700">Tengo en mi cocina:</span>
+                <span id="selectedCount" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">3 seleccionados</span>
+              </div>
+
+              <div class="flex flex-wrap gap-2" id="ingredientsPills">
+                <button onclick="toggleIngredient(this, 'huevos')" data-ing="huevos" class="ing-pill active bg-emerald-600 text-white text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-emerald-600 transition flex items-center gap-1.5">
+                  🥚 Huevos
+                </button>
+                <button onclick="toggleIngredient(this, 'atun')" data-ing="atun" class="ing-pill active bg-emerald-600 text-white text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-emerald-600 transition flex items-center gap-1.5">
+                  🐟 Lata de Atún
+                </button>
+                <button onclick="toggleIngredient(this, 'tortillas')" data-ing="tortillas" class="ing-pill active bg-emerald-600 text-white text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-emerald-600 transition flex items-center gap-1.5">
+                  🌽 Tortillas
+                </button>
+                <button onclick="toggleIngredient(this, 'panela')" data-ing="panela" class="ing-pill bg-slate-100 text-slate-700 text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex items-center gap-1.5">
+                  🧀 Queso Panela
+                </button>
+                <button onclick="toggleIngredient(this, 'cebolla')" data-ing="cebolla" class="ing-pill bg-slate-100 text-slate-700 text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex items-center gap-1.5">
+                  🧅 Cebolla
+                </button>
+                <button onclick="toggleIngredient(this, 'jitomate')" data-ing="jitomate" class="ing-pill bg-slate-100 text-slate-700 text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex items-center gap-1.5">
+                  🍅 Jitomate
+                </button>
+                <button onclick="toggleIngredient(this, 'arroz')" data-ing="arroz" class="ing-pill bg-slate-100 text-slate-700 text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex items-center gap-1.5">
+                  🍚 Arroz cocido
+                </button>
+                <button onclick="toggleIngredient(this, 'frijoles')" data-ing="frijoles" class="ing-pill bg-slate-100 text-slate-700 text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex items-center gap-1.5">
+                  🫘 Frijoles
+                </button>
+                <button onclick="toggleIngredient(this, 'aguacate')" data-ing="aguacate" class="ing-pill bg-slate-100 text-slate-700 text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex items-center gap-1.5">
+                  🥑 Aguacate
+                </button>
+                <button onclick="toggleIngredient(this, 'avena')" data-ing="avena" class="ing-pill bg-slate-100 text-slate-700 text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition flex items-center gap-1.5">
+                  🥛 Leche / Avena
+                </button>
+              </div>
+
+              <!-- Custom Ingredient Adder -->
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <input type="text" id="customIngInput" onkeypress="if(event.key === 'Enter') addCustomIngredient()" placeholder="+ Otro ingrediente (ej. zanahoria)" class="w-full text-xs lg:text-sm px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+                <button onclick="addCustomIngredient()" class="bg-slate-100 text-slate-700 text-xs lg:text-sm px-4 py-2 rounded-xl font-bold hover:bg-slate-200 active:scale-95 transition">Añadir</button>
+              </div>
+
+              <button id="btnGenerateRefri" onclick="generateRefriRecipe()" class="w-full py-3 bg-emerald-600 text-white font-bold text-xs lg:text-sm rounded-xl shadow-md shadow-emerald-600/30 hover:bg-emerald-700 active:scale-[0.99] transition flex items-center justify-center gap-2">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Generar Receta con estos Ingredientes</span>
+              </button>
             </div>
 
-            <div class="flex flex-wrap gap-1.5" id="ingredientsPills">
-              <!-- Pill items -->
-              <button onclick="toggleIngredient(this, 'huevos')" data-ing="huevos" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
-                🥚 Huevos
-              </button>
-              <button onclick="toggleIngredient(this, 'atun')" data-ing="atun" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
-                🐟 Lata de Atún
-              </button>
-              <button onclick="toggleIngredient(this, 'tortillas')" data-ing="tortillas" class="ing-pill active bg-emerald-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1">
-                🌽 Tortillas
-              </button>
-              <button onclick="toggleIngredient(this, 'panela')" data-ing="panela" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
-                🧀 Queso Panela
-              </button>
-              <button onclick="toggleIngredient(this, 'cebolla')" data-ing="cebolla" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
-                🧅 Cebolla
-              </button>
-              <button onclick="toggleIngredient(this, 'jitomate')" data-ing="jitomate" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
-                🍅 Jitomate
-              </button>
-              <button onclick="toggleIngredient(this, 'arroz')" data-ing="arroz" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
-                🍚 Arroz cocido
-              </button>
-              <button onclick="toggleIngredient(this, 'frijoles')" data-ing="frijoles" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
-                🫘 Frijoles
-              </button>
-              <button onclick="toggleIngredient(this, 'aguacate')" data-ing="aguacate" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
-                🥑 Aguacate
-              </button>
-              <button onclick="toggleIngredient(this, 'avena')" data-ing="avena" class="ing-pill bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 transition flex items-center gap-1">
-                🥛 Leche / Avena
-              </button>
+            <!-- Right: Generated Recipe Result Container -->
+            <div id="refriResult" class="lg:col-span-5 lg:sticky lg:top-24 space-y-3">
+              <!-- Populated via generateRefriRecipe() -->
             </div>
-
-            <!-- Custom Ingredient Adder -->
-            <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
-              <input type="text" id="customIngInput" placeholder="+ Otro ingrediente (ej. zanahoria)" class="w-full text-xs px-3 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
-              <button onclick="addCustomIngredient()" class="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-slate-200 active:scale-95 transition">Añadir</button>
-            </div>
-
-            <button id="btnGenerateRefri" onclick="generateRefriRecipe()" class="w-full py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/30 hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center gap-2">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span>Generar Receta con estos Ingredientes</span>
-            </button>
-          </div>
-
-          <!-- Generated Recipe Result Container -->
-          <div id="refriResult" class="space-y-2.5">
-            <!-- Populated via generateRefriRecipe() -->
           </div>
         </section>
 
         <!-- ================= TAB 4: LISTA DE SÚPER ================= -->
-        <section id="tab-super" class="hidden space-y-3.5">
+        <section id="tab-super" class="hidden space-y-5">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-bold text-slate-800">Lista de Súper Inteligente</h3>
-              <p class="text-[11px] text-slate-500">Calculada para tu menú semanal sin comprar de más</p>
+              <h2 class="text-base lg:text-xl font-extrabold text-slate-800">Lista de Súper Inteligente</h2>
+              <p class="text-xs lg:text-sm text-slate-500">Calculada para tu menú semanal sin comprar de más</p>
             </div>
-            <button onclick="copySuperListToClipboard()" title="Copiar lista para WhatsApp" class="text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1 hover:bg-slate-200 active:scale-95 transition">
-              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
-              Copiar
+            <button onclick="copySuperListToClipboard()" title="Copiar lista para WhatsApp" class="text-xs lg:text-sm bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 hover:bg-slate-100 shadow-sm active:scale-95 transition">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              Copiar lista
             </button>
           </div>
 
-          <!-- Budget Slider & Summary -->
-          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2.5">
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-700">Presupuesto asignado:</span>
-              <span id="budgetValueLabel" class="font-extrabold text-emerald-600 text-sm">$600 MXN</span>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+            <!-- Left Sticky Control Column (Budget + Add item) -->
+            <div class="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
+              <!-- Budget Slider & Summary -->
+              <div class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/70 shadow-sm space-y-3.5">
+                <div class="flex items-center justify-between text-xs lg:text-sm">
+                  <span class="font-bold text-slate-700">Presupuesto asignado:</span>
+                  <span id="budgetValueLabel" class="font-extrabold text-emerald-600 text-base">$600 MXN</span>
+                </div>
+
+                <input type="range" min="300" max="1200" step="50" value="600" id="budgetRange" oninput="updateBudget(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+
+                <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100 text-center">
+                  <div class="bg-slate-50 p-2.5 rounded-xl">
+                    <span class="block text-[10px] text-slate-400">Total Lista</span>
+                    <span id="cartEstimatedTotal" class="text-xs lg:text-sm font-extrabold text-slate-800">$485 MXN</span>
+                  </div>
+                  <div class="bg-emerald-50 p-2.5 rounded-xl">
+                    <span class="block text-[10px] text-emerald-600">Comprado</span>
+                    <span id="cartSpentTotal" class="text-xs lg:text-sm font-extrabold text-emerald-700">$98 MXN</span>
+                  </div>
+                  <div class="bg-teal-50 p-2.5 rounded-xl">
+                    <span class="block text-[10px] text-teal-600">Ahorro Est.</span>
+                    <span id="cartSavingLabel" class="text-xs lg:text-sm font-extrabold text-teal-700">+$115 MXN</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add custom item to list -->
+              <div class="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm space-y-2.5">
+                <span class="text-xs font-bold text-slate-700 block">Agregar producto extra</span>
+                <div class="flex items-center gap-2">
+                  <input type="text" id="newGroceryName" onkeypress="if(event.key === 'Enter') addCustomGroceryItem()" placeholder="Ej. Manzanas" class="w-full text-xs lg:text-sm px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+                  <input type="number" id="newGroceryCost" onkeypress="if(event.key === 'Enter') addCustomGroceryItem()" placeholder="$ MXN" class="w-20 text-xs lg:text-sm px-2.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+                  <button onclick="addCustomGroceryItem()" class="bg-emerald-600 text-white text-sm px-3.5 py-2 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition">
+                    +
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <input type="range" min="300" max="1200" step="50" value="600" id="budgetRange" oninput="updateBudget(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+            <!-- Right Checklist Column -->
+            <div class="lg:col-span-8 space-y-4">
+              <!-- Filter Pills (All / Pending / Done) -->
+              <div class="flex items-center gap-2 text-xs">
+                <button onclick="setGroceryFilter('all', this)" class="grocery-filter-btn active bg-emerald-600 text-white font-bold px-3.5 py-1.5 rounded-xl transition">Todos</button>
+                <button onclick="setGroceryFilter('pending', this)" class="grocery-filter-btn bg-white border border-slate-200 text-slate-600 font-medium px-3.5 py-1.5 rounded-xl hover:border-emerald-300 transition">Pendientes</button>
+                <button onclick="setGroceryFilter('done', this)" class="grocery-filter-btn bg-white border border-slate-200 text-slate-600 font-medium px-3.5 py-1.5 rounded-xl hover:border-emerald-300 transition">Comprados</button>
+              </div>
 
-            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center">
-              <div class="bg-slate-50 p-2 rounded-xl">
-                <span class="block text-[9px] text-slate-400">Total Lista</span>
-                <span id="cartEstimatedTotal" class="text-xs font-extrabold text-slate-800">$485 MXN</span>
-              </div>
-              <div class="bg-emerald-50 p-2 rounded-xl">
-                <span class="block text-[9px] text-emerald-600">Comprado</span>
-                <span id="cartSpentTotal" class="text-xs font-extrabold text-emerald-700">$98 MXN</span>
-              </div>
-              <div class="bg-teal-50 p-2 rounded-xl">
-                <span class="block text-[9px] text-teal-600">Ahorro Est.</span>
-                <span id="cartSavingLabel" class="text-xs font-extrabold text-teal-700">+$115 MXN</span>
+              <!-- Supermarket Checklist Items Container -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="groceryCategoriesContainer">
+                <!-- Populated via renderGroceryList() -->
               </div>
             </div>
-          </div>
-
-          <!-- Filter Pills (All / Pending / Done) -->
-          <div class="flex items-center gap-1.5 text-[11px]">
-            <button onclick="setGroceryFilter('all', this)" class="grocery-filter-btn active bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-xl">Todos</button>
-            <button onclick="setGroceryFilter('pending', this)" class="grocery-filter-btn bg-white border border-slate-200 text-slate-600 font-medium px-2.5 py-1 rounded-xl">Pendientes</button>
-            <button onclick="setGroceryFilter('done', this)" class="grocery-filter-btn bg-white border border-slate-200 text-slate-600 font-medium px-2.5 py-1 rounded-xl">Comprados</button>
-          </div>
-
-          <!-- Add custom item to list -->
-          <div class="bg-white rounded-2xl p-2.5 border border-slate-100 shadow-sm flex items-center gap-2">
-            <input type="text" id="newGroceryName" placeholder="Agregar producto (ej. Manzanas)" class="w-full text-xs px-3 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
-            <input type="number" id="newGroceryCost" placeholder="$ MXN" class="w-16 text-xs px-2 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
-            <button onclick="addCustomGroceryItem()" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition">
-              +
-            </button>
-          </div>
-
-          <!-- Supermarket Checklist Items Container -->
-          <div class="space-y-2.5" id="groceryCategoriesContainer">
-            <!-- Populated via renderGroceryList() -->
           </div>
         </section>
 
         <!-- ================= TAB 5: NUTRIÓLOGO (VALIDACIÓN) ================= -->
-        <section id="tab-nutri" class="hidden space-y-3.5">
-          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2.5">
-            <div class="flex items-center space-x-3">
-              <div class="w-11 h-11 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 font-extrabold text-base">
-                👩‍⚕️
-              </div>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <h4 class="text-xs font-bold text-slate-800">Dra. Sofía Ramos</h4>
-                  <span class="text-[8px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold">VERIFICADA</span>
+        <section id="tab-nutri" class="hidden space-y-5">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+            <!-- Left Column: Doctor Info & Clinical Notes -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/70 shadow-sm space-y-3.5">
+                <div class="flex items-center space-x-3.5">
+                  <div class="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 font-extrabold text-xl">
+                    👩‍⚕️
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h4 class="text-sm lg:text-base font-bold text-slate-800">Dra. Sofía Ramos</h4>
+                      <span class="text-[9px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">VERIFICADA</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Clínica de Nutrición Universitaria</p>
+                    <p class="text-[11px] text-slate-400">Céd. Profesional: Verificada</p>
+                  </div>
                 </div>
-                <p class="text-[11px] text-slate-500">Clínica de Nutrición Universitaria</p>
-                <p class="text-[9px] text-slate-400">Céd. Profesional: Verificada</p>
-              </div>
-            </div>
 
-            <!-- Validation Code Active -->
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
-              <div>
-                <span class="text-[9px] text-slate-400 block uppercase font-bold">Código de Vinculación</span>
-                <span class="font-mono font-bold text-slate-700">UNI-VIVE26</span>
-              </div>
-              <span class="text-[9px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-lg">Activo</span>
-            </div>
-          </div>
-
-          <!-- Professional Prescription & Notes -->
-          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-1.5">
-            <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-              Observaciones del Profesional
-            </h4>
-            <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-2.5 text-[11px] text-emerald-900 leading-relaxed">
-              "Para Alfonso: Se ajustó el menú priorizando alimentos de bajo costo y alta densidad energética para sus horas de estudio matutinas. <strong>Cero dietas restrictivas</strong>; nos enfocamos en que nunca se salte el desayuno."
-            </div>
-          </div>
-
-          <!-- Interactive Nutrition Chat Thread -->
-          <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-2.5">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <h4 class="text-xs font-bold text-slate-800">Chat con Nutrióloga</h4>
-              </div>
-              <span class="text-[9px] text-slate-400">Respuesta rápida</span>
-            </div>
-
-            <!-- Suggested Quick Question Chips -->
-            <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-              <button onclick="askQuickQuestion('¿Cenar carbohidratos engorda?')" class="flex-shrink-0 text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 transition">
-                🌙 ¿Carbohidratos de noche?
-              </button>
-              <button onclick="askQuickQuestion('¿Qué como antes de un examen para tener energía?')" class="flex-shrink-0 text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 transition">
-                ⚡ Comida pre-examen
-              </button>
-              <button onclick="askQuickQuestion('¿El café en ayunas hace daño?')" class="flex-shrink-0 text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 transition">
-                ☕ ¿Café en ayunas?
-              </button>
-            </div>
-
-            <!-- Message History Container -->
-            <div id="chatMessagesContainer" class="space-y-2 max-h-52 overflow-y-auto no-scrollbar p-1">
-              <!-- Initial verified message from doctor -->
-              <div class="flex items-start space-x-2 animate-in fade-in">
-                <div class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 text-[10px] flex items-center justify-center font-bold flex-shrink-0">
-                  SR
+                <!-- Validation Code Active -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
+                  <div>
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold">Código de Vinculación</span>
+                    <span class="font-mono font-bold text-slate-700 text-sm">UNI-VIVE26</span>
+                  </div>
+                  <span class="text-[10px] bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-lg">Activo</span>
                 </div>
-                <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed space-y-1">
-                  <p>Hola Alfonso, revisé tu registro. Vas excelente manteniendo tus horarios de desayuno. ¿Tienes alguna duda de tu menú o viste algún mito que quieras aclarar?</p>
-                  <div class="text-[9px] text-slate-400 text-right">Hoy 10:15 AM</div>
+              </div>
+
+              <!-- Professional Prescription & Notes -->
+              <div class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/70 shadow-sm space-y-2.5">
+                <h4 class="text-xs lg:text-sm font-bold text-slate-700 flex items-center gap-2">
+                  <i data-lucide="clipboard-check" class="w-4 h-4 text-emerald-600"></i>
+                  Observaciones del Profesional
+                </h4>
+                <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-3.5 text-xs lg:text-sm text-emerald-900 leading-relaxed">
+                  "Para Alfonso: Se ajustó el menú priorizando alimentos de bajo costo y alta densidad energética para sus horas de estudio matutinas. <strong>Cero dietas restrictivas</strong>; nos enfocamos en que nunca se salte el desayuno."
                 </div>
               </div>
             </div>
 
-            <!-- Typing indicator -->
-            <div id="typingIndicator" class="hidden flex items-center space-x-1 text-[11px] text-slate-400 pl-8">
-              <span>Dra. Sofía está escribiendo</span>
-              <span class="animate-bounce">•</span>
-              <span class="animate-bounce delay-100">•</span>
-              <span class="animate-bounce delay-200">•</span>
-            </div>
+            <!-- Right Column: Spacious Interactive Nutrition Chat Thread -->
+            <div class="lg:col-span-7 bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/70 shadow-sm flex flex-col lg:h-[540px] space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center space-x-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <h4 class="text-xs lg:text-sm font-bold text-slate-800">Chat con Nutrióloga</h4>
+                </div>
+                <span class="text-[10px] lg:text-xs text-slate-400">Respuesta rápida</span>
+              </div>
 
-            <!-- Chat input -->
-            <div class="flex gap-2 pt-1 border-t border-slate-100">
-              <input type="text" id="nutriQuestionInput" onkeypress="if(event.key === 'Enter') sendNutriQuestion()" placeholder="Escribe tu duda..." class="w-full text-xs px-3 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
-              <button onclick="sendNutriQuestion()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center">
-                <i data-lucide="send" class="w-3.5 h-3.5"></i>
-              </button>
+              <!-- Suggested Quick Question Chips -->
+              <div class="flex gap-2 overflow-x-auto no-scrollbar py-0.5 flex-shrink-0">
+                <button onclick="askQuickQuestion('¿Cenar carbohidratos engorda?')" class="flex-shrink-0 text-[11px] lg:text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-200 transition">
+                  🌙 ¿Carbohidratos de noche?
+                </button>
+                <button onclick="askQuickQuestion('¿Qué como antes de un examen para tener energía?')" class="flex-shrink-0 text-[11px] lg:text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-200 transition">
+                  ⚡ Comida pre-examen
+                </button>
+                <button onclick="askQuickQuestion('¿El café en ayunas hace daño?')" class="flex-shrink-0 text-[11px] lg:text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full border border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-200 transition">
+                  ☕ ¿Café en ayunas?
+                </button>
+              </div>
+
+              <!-- Message History Container -->
+              <div id="chatMessagesContainer" class="flex-1 space-y-3 max-h-60 lg:max-h-none overflow-y-auto no-scrollbar p-1">
+                <!-- Initial verified message from doctor -->
+                <div class="flex items-start space-x-2.5 animate-in fade-in">
+                  <div class="w-7 h-7 rounded-full bg-teal-100 text-teal-800 text-[11px] flex items-center justify-center font-bold flex-shrink-0">
+                    SR
+                  </div>
+                  <div class="bg-slate-100 text-slate-700 text-xs lg:text-sm p-3 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed space-y-1">
+                    <p>Hola Alfonso, revisé tu registro. Vas excelente manteniendo tus horarios de desayuno. ¿Tienes alguna duda de tu menú o viste algún mito que quieras aclarar?</p>
+                    <div class="text-[10px] text-slate-400 text-right">Hoy 10:15 AM</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Typing indicator -->
+              <div id="typingIndicator" class="hidden flex items-center space-x-1 text-xs text-slate-400 pl-9 flex-shrink-0">
+                <span>Dra. Sofía está escribiendo</span>
+                <span class="animate-bounce">•</span>
+                <span class="animate-bounce delay-100">•</span>
+                <span class="animate-bounce delay-200">•</span>
+              </div>
+
+              <!-- Chat input -->
+              <div class="flex gap-2 pt-2 border-t border-slate-100 flex-shrink-0">
+                <input type="text" id="nutriQuestionInput" onkeypress="if(event.key === 'Enter') sendNutriQuestion()" placeholder="Escribe tu duda nutricional..." class="w-full text-xs lg:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500">
+                <button onclick="sendNutriQuestion()" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs lg:text-sm font-bold hover:bg-emerald-700 active:scale-95 transition flex items-center justify-center gap-1.5">
+                  <i data-lucide="send" class="w-4 h-4"></i>
+                  <span class="hidden sm:inline">Enviar</span>
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
       </main>
 
-      <!-- BOTTOM NAVIGATION BAR (FIXED) -->
-      <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around z-30">
+      <!-- MOBILE BOTTOM NAVIGATION BAR (Hidden on Desktop lg+) -->
+      <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around z-30">
         <!-- Tab 1: Hoy -->
         <button onclick="switchTab('hoy')" class="nav-item active flex flex-col items-center text-emerald-600 transition" data-tab="hoy">
           <i data-lucide="home" class="w-5 h-5"></i>
@@ -706,197 +791,229 @@
         </button>
       </nav>
 
-      <!-- RECIPE MODAL POPUP WITH STEP-BY-STEP COOKING MODE & TIMER -->
-      <div id="recipeModal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition">
-        <div class="bg-white w-full rounded-t-3xl sm:rounded-3xl max-h-[88vh] overflow-y-auto no-scrollbar p-5 space-y-3.5 shadow-2xl animate-in slide-in-from-bottom">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-            <span id="modalCategory" class="text-[10px] font-bold text-emerald-600 uppercase">Receta Express</span>
-            <button onclick="closeRecipeModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
-              ✕
-            </button>
-          </div>
+    </div>
+  </div>
 
-          <div class="space-y-1">
-            <h3 id="modalTitle" class="text-base font-extrabold text-slate-800">Nombre de la Receta</h3>
-            <div class="flex items-center gap-2.5 text-xs text-slate-500">
-              <span id="modalTime">⏱️ 10 min</span>
-              <span>•</span>
-              <span id="modalCost" class="text-emerald-600 font-semibold">~$25 MXN</span>
-              <span>•</span>
-              <span class="text-slate-400">1 Sartén</span>
-            </div>
-          </div>
+  <!-- ================= GLOBAL FULL-VIEWPORT MODALS ================= -->
 
-          <!-- Working Kitchen Cooking Timer with Circular Animated Ring -->
-          <div class="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-3 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <!-- Circular SVG Progress Ring -->
-              <div class="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
-                <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="20" stroke="#d1fae5" stroke-width="4" fill="transparent" />
-                  <circle id="timerRingProgress" cx="24" cy="24" r="20" stroke="#059669" stroke-width="4"
-                          stroke-dasharray="125.66" stroke-dashoffset="0" stroke-linecap="round" fill="transparent"
-                          class="transition-all duration-1000 ease-linear" />
-                </svg>
-                <span id="kitchenTimerDisplay" class="absolute text-[11px] font-mono font-black text-emerald-800">10:00</span>
-              </div>
-              <div>
-                <span class="text-[9px] uppercase font-bold text-emerald-800 block">Temporizador de Cocina</span>
-                <span id="timerStatusLabel" class="text-[10px] text-emerald-600 font-medium">Listo para iniciar</span>
-              </div>
-            </div>
-            <div class="flex items-center space-x-1.5">
-              <button id="btnTimerToggle" onclick="toggleKitchenTimer()" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition">
-                Iniciar
-              </button>
-              <button onclick="resetKitchenTimer()" class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1.5 rounded-xl font-bold hover:bg-slate-300 active:scale-95 transition">
-                ↺
-              </button>
-            </div>
-          </div>
+  <!-- RECIPE MODAL POPUP WITH STEP-BY-STEP COOKING MODE & TIMER -->
+  <div id="recipeModal" onclick="if(event.target === this) closeRecipeModal()" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition">
+    <div class="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto no-scrollbar p-5 sm:p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <span id="modalCategory" class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Receta Express</span>
+        <button onclick="closeRecipeModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+          ✕
+        </button>
+      </div>
 
-          <!-- Mode Toggle: Simple vs Step-by-Step Cooking Guide -->
-          <div class="flex items-center justify-between pt-1">
-            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Preparación</span>
-            <button onclick="toggleCookingGuideMode()" id="btnGuideToggle" class="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-1 rounded-lg hover:bg-emerald-50 hover:text-emerald-700 transition">
-              👨‍🍳 Modo Paso a Paso
-            </button>
-          </div>
-
-          <!-- Ingredients List -->
-          <div id="modalIngredientsBox" class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-500 uppercase">Ingredientes:</span>
-            <ul id="modalIngredients" class="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <!-- Dynamically populated -->
-            </ul>
-          </div>
-
-          <!-- Simple Steps List -->
-          <div id="modalSimpleStepsBox">
-            <ol id="modalSteps" class="text-xs text-slate-600 space-y-2 list-decimal list-inside bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <!-- Dynamically populated -->
-            </ol>
-          </div>
-
-          <!-- Interactive Step-by-Step Carousel Guide (Initially Hidden) -->
-          <div id="modalGuideStepBox" class="hidden bg-slate-900 text-white p-4 rounded-2xl space-y-3">
-            <div class="flex items-center justify-between text-xs text-slate-400">
-              <span id="guideStepCount">Paso 1 de 3</span>
-              <span class="text-[10px] text-emerald-400 font-bold">MODO COCINA ACTIVO</span>
-            </div>
-            <p id="guideStepInstruction" class="text-sm font-semibold leading-relaxed text-slate-100">
-              Corta las tortillas en triángulos...
-            </p>
-            <div class="flex items-center justify-between pt-2 border-t border-slate-800">
-              <button onclick="prevGuideStep()" class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl font-bold hover:bg-slate-700">
-                ← Anterior
-              </button>
-              <button onclick="nextGuideStep()" class="text-xs bg-emerald-500 text-slate-900 px-3.5 py-1.5 rounded-xl font-bold hover:bg-emerald-400">
-                Siguiente →
-              </button>
-            </div>
-          </div>
-
-          <div class="flex gap-2 pt-1">
-            <button onclick="addRecipeIngredientsToSuper()" class="w-1/2 py-2.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200 active:scale-95 transition">
-              + Al Súper
-            </button>
-            <button onclick="closeRecipeModal()" class="w-1/2 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-95 transition">
-              Listo
-            </button>
-          </div>
+      <div class="space-y-1">
+        <h3 id="modalTitle" class="text-lg font-extrabold text-slate-800">Nombre de la Receta</h3>
+        <div class="flex items-center gap-2.5 text-xs sm:text-sm text-slate-500">
+          <span id="modalTime">⏱️ 10 min</span>
+          <span>•</span>
+          <span id="modalCost" class="text-emerald-600 font-semibold">~$25 MXN</span>
+          <span>•</span>
+          <span class="text-slate-400">1 Sartén</span>
         </div>
       </div>
 
-      <!-- SIMULATED SCANNER MODAL (YUKA / SEMÁFORO NUTRICIONAL) -->
-      <div id="scannerModal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-            <div class="flex items-center space-x-1.5">
-              <i data-lucide="scan-barcode" class="w-4 h-4 text-emerald-600"></i>
-              <h3 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Semáforo de Alimentos</h3>
-            </div>
-            <button onclick="closeScannerModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
-              ✕
-            </button>
+      <!-- Working Kitchen Cooking Timer with Circular Animated Ring -->
+      <div class="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3.5">
+          <!-- Circular SVG Progress Ring -->
+          <div class="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
+            <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" stroke="#d1fae5" stroke-width="4" fill="transparent" />
+              <circle id="timerRingProgress" cx="24" cy="24" r="20" stroke="#059669" stroke-width="4"
+                      stroke-dasharray="125.66" stroke-dashoffset="0" stroke-linecap="round" fill="transparent"
+                      class="transition-all duration-1000 ease-linear" />
+            </svg>
+            <span id="kitchenTimerDisplay" class="absolute text-xs font-mono font-black text-emerald-800">10:00</span>
           </div>
-
-          <p class="text-[11px] text-slate-500 leading-tight">
-            Escanea o selecciona un snack común en el campus para conocer su impacto nutricional y una alternativa más barata.
-          </p>
-
-          <!-- Simulated Camera Viewfinder -->
-          <div class="relative w-full h-36 bg-slate-950 rounded-2xl overflow-hidden flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/50">
-            <div class="absolute inset-x-0 h-1 scanner-laser"></div>
-            <i data-lucide="barcode" class="w-16 h-16 text-slate-600 opacity-60"></i>
-            <span class="text-[10px] text-slate-400 mt-2 font-mono">Apuntando a código de barras...</span>
-          </div>
-
-          <!-- Quick Select Snacks -->
-          <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-500 uppercase">Probar con producto de muestra:</span>
-            <div class="grid grid-cols-3 gap-1.5">
-              <button onclick="simulateScanProduct('galletas')" class="bg-slate-50 border border-slate-200 p-2 rounded-xl text-center hover:border-emerald-500 transition">
-                <span class="text-base block">🍪</span>
-                <span class="text-[10px] font-bold text-slate-700 block truncate">Galletas</span>
-              </button>
-              <button onclick="simulateScanProduct('atun')" class="bg-slate-50 border border-slate-200 p-2 rounded-xl text-center hover:border-emerald-500 transition">
-                <span class="text-base block">🐟</span>
-                <span class="text-[10px] font-bold text-slate-700 block truncate">Lata Atún</span>
-              </button>
-              <button onclick="simulateScanProduct('refresco')" class="bg-slate-50 border border-slate-200 p-2 rounded-xl text-center hover:border-emerald-500 transition">
-                <span class="text-base block">🥤</span>
-                <span class="text-[10px] font-bold text-slate-700 block truncate">Refresco</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Result Area -->
-          <div id="scanResultArea" class="hidden space-y-2.5 pt-2 border-t border-slate-100">
-            <!-- Dynamically populated -->
+          <div>
+            <span class="text-[10px] uppercase font-bold text-emerald-800 block">Temporizador de Cocina</span>
+            <span id="timerStatusLabel" class="text-xs text-emerald-600 font-medium">Listo para iniciar</span>
           </div>
         </div>
-      </div>
-
-      <!-- MONTHLY IMPACT & SAVINGS MODAL -->
-      <div id="impactModal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-3.5 shadow-2xl">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-            <h3 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Tu Impacto Este Mes</h3>
-            <button onclick="closeImpactModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
-              ✕
-            </button>
-          </div>
-
-          <div class="bg-gradient-to-tr from-emerald-600 to-teal-500 text-white p-4 rounded-2xl text-center shadow-md">
-            <span class="text-[10px] uppercase font-bold text-emerald-100">Ahorro Económico Estimado</span>
-            <div class="text-2xl font-black mt-0.5">$340 MXN</div>
-            <p class="text-[10px] text-emerald-100 mt-1">Comparado con comer en cafeterías todos los días</p>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-center text-xs">
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-              <span class="text-base block">🥗</span>
-              <strong class="text-slate-800 font-bold block mt-0.5">1.4 kg</strong>
-              <span class="text-[10px] text-slate-400">Comida rescatada</span>
-            </div>
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-              <span class="text-base block">⏱️</span>
-              <strong class="text-slate-800 font-bold block mt-0.5">4.5 hrs</strong>
-              <span class="text-[10px] text-slate-400">Ahorradas en cocina</span>
-            </div>
-          </div>
-
-          <button onclick="closeImpactModal()" class="w-full py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200">
-            Entendido
+        <div class="flex items-center space-x-2">
+          <button id="btnTimerToggle" onclick="toggleKitchenTimer()" class="bg-emerald-600 text-white text-xs px-3.5 py-2 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition">
+            Iniciar
+          </button>
+          <button onclick="resetKitchenTimer()" class="bg-slate-200 text-slate-600 text-xs px-3 py-2 rounded-xl font-bold hover:bg-slate-300 active:scale-95 transition">
+            ↺
           </button>
         </div>
       </div>
 
+      <!-- Mode Toggle: Simple vs Step-by-Step Cooking Guide -->
+      <div class="flex items-center justify-between pt-1">
+        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Preparación</span>
+        <button onclick="toggleCookingGuideMode()" id="btnGuideToggle" class="text-xs font-bold bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+          👨‍🍳 Modo Paso a Paso
+        </button>
+      </div>
+
+      <!-- Ingredients List -->
+      <div id="modalIngredientsBox" class="space-y-1.5">
+        <span class="text-[11px] font-bold text-slate-500 uppercase">Ingredientes:</span>
+        <ul id="modalIngredients" class="text-xs sm:text-sm text-slate-600 space-y-1.5 bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+          <!-- Dynamically populated -->
+        </ul>
+      </div>
+
+      <!-- Simple Steps List -->
+      <div id="modalSimpleStepsBox">
+        <ol id="modalSteps" class="text-xs sm:text-sm text-slate-600 space-y-2 list-decimal list-inside bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+          <!-- Dynamically populated -->
+        </ol>
+      </div>
+
+      <!-- Interactive Step-by-Step Carousel Guide (Initially Hidden) -->
+      <div id="modalGuideStepBox" class="hidden bg-slate-900 text-white p-5 rounded-2xl space-y-4">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span id="guideStepCount">Paso 1 de 3</span>
+          <span class="text-[10px] text-emerald-400 font-bold">MODO COCINA ACTIVO</span>
+        </div>
+        <p id="guideStepInstruction" class="text-base font-semibold leading-relaxed text-slate-100">
+          Corta las tortillas en triángulos...
+        </p>
+        <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+          <button onclick="prevGuideStep()" class="text-xs bg-slate-800 text-slate-300 px-3.5 py-2 rounded-xl font-bold hover:bg-slate-700">
+            ← Anterior
+          </button>
+          <button onclick="nextGuideStep()" class="text-xs bg-emerald-500 text-slate-900 px-4 py-2 rounded-xl font-bold hover:bg-emerald-400">
+            Siguiente →
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-1">
+        <button onclick="addRecipeIngredientsToSuper()" class="w-1/2 py-3 bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold rounded-xl hover:bg-slate-200 active:scale-95 transition">
+          + Al Súper
+        </button>
+        <button onclick="closeRecipeModal()" class="w-1/2 py-3 bg-emerald-600 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-95 transition">
+          Listo
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- Interactive JavaScript Logic with Enhanced Realism -->
+  <!-- SIMULATED SCANNER MODAL (YUKA / SEMÁFORO NUTRICIONAL) -->
+  <div id="scannerModal" onclick="if(event.target === this) closeScannerModal()" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition">
+    <div class="bg-white w-full max-w-md rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="scan-barcode" class="w-5 h-5 text-emerald-600"></i>
+          <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Semáforo de Alimentos</h3>
+        </div>
+        <button onclick="closeScannerModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+          ✕
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 leading-relaxed">
+        Escanea o selecciona un snack común en el campus para conocer su impacto nutricional y una alternativa más barata.
+      </p>
+
+      <!-- Simulated Camera Viewfinder -->
+      <div class="relative w-full h-40 bg-slate-950 rounded-2xl overflow-hidden flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/50">
+        <div class="absolute inset-x-0 h-1 scanner-laser"></div>
+        <i data-lucide="barcode" class="w-16 h-16 text-slate-600 opacity-60"></i>
+        <span class="text-xs text-slate-400 mt-2 font-mono">Apuntando a código de barras...</span>
+      </div>
+
+      <!-- Quick Select Snacks -->
+      <div class="space-y-2">
+        <span class="text-[11px] font-bold text-slate-500 uppercase">Probar con producto de muestra:</span>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="simulateScanProduct('galletas')" class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-center hover:border-emerald-500 hover:bg-emerald-50/40 transition">
+            <span class="text-xl block">🍪</span>
+            <span class="text-xs font-bold text-slate-700 block truncate mt-1">Galletas</span>
+          </button>
+          <button onclick="simulateScanProduct('atun')" class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-center hover:border-emerald-500 hover:bg-emerald-50/40 transition">
+            <span class="text-xl block">🐟</span>
+            <span class="text-xs font-bold text-slate-700 block truncate mt-1">Lata Atún</span>
+          </button>
+          <button onclick="simulateScanProduct('refresco')" class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-center hover:border-emerald-500 hover:bg-emerald-50/40 transition">
+            <span class="text-xl block">🥤</span>
+            <span class="text-xs font-bold text-slate-700 block truncate mt-1">Refresco</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Result Area -->
+      <div id="scanResultArea" class="hidden space-y-2.5 pt-2 border-t border-slate-100">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTHLY IMPACT & SAVINGS MODAL -->
+  <div id="impactModal" onclick="if(event.target === this) closeImpactModal()" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Tu Impacto Este Mes</h3>
+        <button onclick="closeImpactModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+          ✕
+        </button>
+      </div>
+
+      <div class="bg-gradient-to-tr from-emerald-600 to-teal-500 text-white p-5 rounded-2xl text-center shadow-md">
+        <span class="text-xs uppercase font-bold text-emerald-100">Ahorro Económico Estimado</span>
+        <div class="text-3xl font-black mt-1">$340 MXN</div>
+        <p class="text-xs text-emerald-100 mt-1">Comparado con comer en cafeterías todos los días</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-center text-xs">
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+          <span class="text-xl block">🥗</span>
+          <strong class="text-slate-800 text-base font-extrabold block mt-1">1.4 kg</strong>
+          <span class="text-xs text-slate-400">Comida rescatada</span>
+        </div>
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+          <span class="text-xl block">⏱️</span>
+          <strong class="text-slate-800 text-base font-extrabold block mt-1">4.5 hrs</strong>
+          <span class="text-xs text-slate-400">Ahorradas en cocina</span>
+        </div>
+      </div>
+
+      <button onclick="closeImpactModal()" class="w-full py-2.5 bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold rounded-xl hover:bg-slate-200 transition">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- QR CODE MODAL (For presenting / opening on phone anytime) -->
+  <div id="qrModal" onclick="if(event.target === this) closeQrModal()" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl text-center">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="qr-code" class="w-5 h-5 text-emerald-600"></i>
+          <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Abrir en tu Celular</h3>
+        </div>
+        <button onclick="closeQrModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+          ✕
+        </button>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl flex flex-col items-center space-y-3">
+        <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+          <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://diegogomez12.github.io/ProjectoIE/" alt="QR VIVE+" class="w-44 h-44 object-contain">
+        </div>
+        <div class="space-y-1">
+          <span class="inline-block text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">EN VIVO</span>
+          <p class="text-xs text-slate-500">Apunta la cámara de tu teléfono para probar VIVE+ en versión móvil.</p>
+          <div class="text-xs text-emerald-600 font-mono font-bold" id="qrUrlLabel">viveplus-app.demo</div>
+        </div>
+      </div>
+
+      <button onclick="closeQrModal()" class="w-full py-2.5 bg-emerald-600 text-white text-xs sm:text-sm font-bold rounded-xl hover:bg-emerald-700 transition">
+        Cerrar
+      </button>
+    </div>
+  </div>
+
+  <!-- Interactive JavaScript Logic -->
   <script>
     // Initialize Lucide Icons
     lucide.createIcons();
@@ -953,10 +1070,10 @@
       soundEnabled = !soundEnabled;
       const btn = document.getElementById('btnSoundToggle');
       if (soundEnabled) {
-        btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i>`;
+        btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i>`;
         showToast('🔊 Sonidos activados');
       } else {
-        btn.innerHTML = `<i data-lucide="volume-x" class="w-3.5 h-3.5"></i>`;
+        btn.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4"></i>`;
         showToast('🔇 Sonidos silenciados');
       }
       lucide.createIcons();
@@ -1033,7 +1150,15 @@
       return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
     }
 
-    // ================= TAB NAVIGATION (Smooth Slide Transition) =================
+    // ================= TAB NAVIGATION (Desktop Sidebar + Mobile Bottom Nav) =================
+    const TAB_META = {
+      hoy: { title: 'Resumen de Hoy', subtitle: 'Miércoles, 18 de Nov • Proyecto de Innovación Universitaria' },
+      menu: { title: 'Menú Semanal', subtitle: 'Organiza comidas rápidas y balanceadas según tu presupuesto' },
+      refri: { title: 'Rescate de Refri', subtitle: 'Aprovecha los ingredientes que ya tienes sin gastar extra' },
+      super: { title: 'Lista de Súper', subtitle: 'Control de gastos y compras inteligentes para la semana' },
+      nutri: { title: 'Seguimiento Nutricional', subtitle: 'Respaldo profesional verificado • Código UNI-VIVE26' }
+    };
+
     function switchTab(tabId) {
       const tabs = ['hoy', 'menu', 'refri', 'super', 'nutri'];
       tabs.forEach(t => {
@@ -1047,10 +1172,18 @@
       const activeSection = document.getElementById('tab-' + tabId);
       if (activeSection) {
         activeSection.classList.remove('hidden');
-        void activeSection.offsetWidth; // Trigger reflow for smooth animation
+        void activeSection.offsetWidth;
         activeSection.classList.add('tab-view');
       }
 
+      // Update Desktop Header Title & Subtitle
+      const meta = TAB_META[tabId] || TAB_META.hoy;
+      const dTitle = document.getElementById('desktopPageTitle');
+      const dSub = document.getElementById('desktopPageSubtitle');
+      if (dTitle) dTitle.innerText = meta.title;
+      if (dSub) dSub.innerText = meta.subtitle;
+
+      // Update Mobile Bottom Nav
       document.querySelectorAll('.nav-item').forEach(btn => {
         const match = btn.getAttribute('data-tab') === tabId;
         if (match) {
@@ -1062,13 +1195,35 @@
         }
       });
 
+      // Update Desktop Sidebar Nav
+      document.querySelectorAll('.desktop-nav-item').forEach(btn => {
+        const match = btn.getAttribute('data-tab') === tabId;
+        const isRefri = btn.getAttribute('data-tab') === 'refri';
+        if (match) {
+          btn.classList.remove('text-slate-600', 'font-medium', 'hover:bg-slate-100', 'hover:bg-amber-50');
+          if (isRefri) {
+            btn.classList.add('bg-amber-50', 'text-amber-700', 'font-bold');
+          } else {
+            btn.classList.add('bg-emerald-50', 'text-emerald-700', 'font-bold');
+          }
+        } else {
+          btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'bg-amber-50', 'text-amber-700', 'font-bold');
+          btn.classList.add('text-slate-600', 'font-medium');
+          if (isRefri) {
+            btn.classList.add('hover:bg-amber-50');
+          } else {
+            btn.classList.add('hover:bg-slate-100');
+          }
+        }
+      });
+
       if (tabId === 'menu') renderWeeklyDay(APP_STATE.activeDay);
       if (tabId === 'super') renderGroceryList();
       if (tabId === 'refri') updateRefriCount();
 
       playSound('pop');
       if (navigator.vibrate) navigator.vibrate(25);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // ================= WATER TRACKER =================
@@ -1084,7 +1239,7 @@
           renderWaterUI();
           showToast(`💧 ${APP_STATE.water} vasos registrados hoy`);
         };
-        glass.className = `cursor-pointer h-6 rounded-md transition-all flex items-center justify-center text-[9px] font-bold ${
+        glass.className = `cursor-pointer h-8 rounded-lg transition-all flex items-center justify-center text-[11px] font-bold ${
           filled ? 'bg-blue-500 text-white shadow-sm' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
         }`;
         glass.innerText = i;
@@ -1133,12 +1288,12 @@
         if (isDone) {
           badge?.classList.remove('hidden');
           if (btn) {
-            btn.className = 'meal-check-btn w-6 h-6 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white flex items-center justify-center transition active:scale-90 flex-shrink-0';
+            btn.className = 'meal-check-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border-2 border-emerald-500 bg-emerald-500 text-white flex items-center justify-center transition active:scale-90 flex-shrink-0';
           }
         } else {
           badge?.classList.add('hidden');
           if (btn) {
-            btn.className = 'meal-check-btn w-6 h-6 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90 flex-shrink-0';
+            btn.className = 'meal-check-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center transition active:scale-90 flex-shrink-0';
           }
         }
       });
@@ -1196,20 +1351,23 @@
       const container = document.getElementById('weeklyMealsContainer');
       
       container.innerHTML = meals.map((m, idx) => `
-        <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm space-y-1.5 hover:border-emerald-200 transition">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-bold ${idx === 0 ? 'text-amber-600' : idx === 1 ? 'text-emerald-600' : 'text-teal-600'} uppercase">
-              ${idx === 0 ? '☀️' : idx === 1 ? '🍲' : '🌙'} ${m.type}
-            </span>
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">⏱️ ${m.time} • ~$${m.cost} MXN</span>
-              <button onclick="swapMealCard('${dayKey}', ${idx})" title="Cambiar platillo" class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-emerald-50 hover:text-emerald-700 active:scale-90 transition">
+        <div class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/70 shadow-sm flex flex-col justify-between space-y-3 hover:border-emerald-300 hover:shadow-md transition">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold ${idx === 0 ? 'text-amber-600' : idx === 1 ? 'text-emerald-600' : 'text-teal-600'} uppercase tracking-wider">
+                ${idx === 0 ? '☀️' : idx === 1 ? '🍲' : '🌙'} ${m.type}
+              </span>
+              <button onclick="swapMealCard('${dayKey}', ${idx})" title="Cambiar platillo" class="w-7 h-7 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-emerald-50 hover:text-emerald-700 active:scale-90 transition">
                 ↺
               </button>
             </div>
+            <h4 class="font-bold text-slate-800 text-sm lg:text-base leading-snug">${m.name}</h4>
+            <p class="text-xs text-slate-500 leading-relaxed">${m.desc}</p>
           </div>
-          <h4 class="font-bold text-slate-800 text-xs">${m.name}</h4>
-          <p class="text-[11px] text-slate-500 leading-tight">${m.desc}</p>
+          <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-500 font-medium">⏱️ ${m.time}</span>
+            <span class="bg-emerald-50 text-emerald-700 font-bold px-2.5 py-0.5 rounded-lg">~$${m.cost} MXN</span>
+          </div>
         </div>
       `).join('');
     }
@@ -1219,12 +1377,12 @@
         b.classList.remove('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
         b.classList.add('bg-white', 'text-slate-600');
         const span = b.querySelector('span');
-        if (span) span.className = 'block text-[9px] text-slate-400 font-medium';
+        if (span) span.className = 'block text-[9px] lg:text-[10px] text-slate-400 font-medium';
       });
       btn.classList.remove('bg-white', 'text-slate-600');
       btn.classList.add('bg-emerald-600', 'text-white', 'shadow-md', 'shadow-emerald-600/25');
       const span = btn.querySelector('span');
-      if (span) span.className = 'block text-[9px] text-emerald-100 font-medium';
+      if (span) span.className = 'block text-[9px] lg:text-[10px] text-emerald-100 font-medium';
 
       playSound('pop');
       renderWeeklyDay(dayKey);
@@ -1319,7 +1477,7 @@
       const btn = document.createElement('button');
       btn.onclick = () => toggleIngredient(btn, val);
       btn.setAttribute('data-ing', val);
-      btn.className = 'ing-pill active bg-emerald-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-xl border border-emerald-600 transition flex items-center gap-1';
+      btn.className = 'ing-pill active bg-emerald-600 text-white text-xs lg:text-sm font-medium px-3 py-2 rounded-xl border border-emerald-600 transition flex items-center gap-1.5';
       btn.innerText = `🥗 ${val.charAt(0).toUpperCase() + val.slice(1)}`;
       container.appendChild(btn);
       input.value = '';
@@ -1328,77 +1486,85 @@
       showToast(`Ingrediente "${val}" agregado a tu refri`);
     }
 
-    function generateRefriRecipe() {
+    function generateRefriRecipe(silent = false) {
       const btn = document.getElementById('btnGenerateRefri');
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = `<span class="animate-spin mr-1">⏳</span> Analizando combinaciones...`;
-      btn.disabled = true;
+      if (!silent) {
+        btn.innerHTML = `<span class="animate-spin mr-1">⏳</span> Analizando combinaciones...`;
+        btn.disabled = true;
+      }
 
-      // Render Shimmer Skeleton Card
       const container = document.getElementById('refriResult');
-      container.innerHTML = `
-        <div class="bg-white rounded-2xl p-3.5 border border-slate-200/90 shadow-sm space-y-3 animate-in fade-in">
-          <div class="flex items-center justify-between">
-            <div class="h-3.5 w-28 rounded-md shimmer-card"></div>
-            <div class="h-3.5 w-12 rounded-md shimmer-card"></div>
+      if (!silent) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3.5 animate-in fade-in">
+            <div class="flex items-center justify-between">
+              <div class="h-4 w-32 rounded-md shimmer-card"></div>
+              <div class="h-4 w-16 rounded-md shimmer-card"></div>
+            </div>
+            <div class="h-5 w-3/4 rounded-md shimmer-card"></div>
+            <div class="space-y-2 p-3 bg-slate-50 rounded-xl">
+              <div class="h-3 w-5/6 rounded shimmer-card"></div>
+              <div class="h-3 w-4/6 rounded shimmer-card"></div>
+            </div>
+            <div class="flex justify-between items-center pt-1">
+              <div class="h-4 w-28 rounded-md shimmer-card"></div>
+              <div class="h-4 w-24 rounded-md shimmer-card"></div>
+            </div>
           </div>
-          <div class="h-4.5 w-3/4 rounded-md shimmer-card"></div>
-          <div class="space-y-1.5 p-2.5 bg-slate-50 rounded-xl">
-            <div class="h-2.5 w-5/6 rounded shimmer-card"></div>
-            <div class="h-2.5 w-4/6 rounded shimmer-card"></div>
-          </div>
-          <div class="flex justify-between items-center pt-1">
-            <div class="h-3.5 w-24 rounded-md shimmer-card"></div>
-            <div class="h-3.5 w-20 rounded-md shimmer-card"></div>
-          </div>
-        </div>
-      `;
+        `;
+      }
 
+      const delay = silent ? 0 : 550;
       setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
+        if (!silent) {
+          btn.innerHTML = originalHTML;
+          btn.disabled = false;
+        }
 
         const activeElements = Array.from(document.querySelectorAll('.ing-pill.active')).map(el => el.getAttribute('data-ing'));
         let matched = REFRI_RECIPES.find(r => r.req.every(req => activeElements.includes(req))) || REFRI_RECIPES[0];
         
         container.innerHTML = `
-          <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 animate-pulse">
+          <h4 class="text-xs lg:text-sm font-bold text-slate-700 flex items-center gap-1.5">
             <span>✨</span> ¡Receta Optimizada para tus Ingredientes!
           </h4>
-          <div class="bg-white rounded-2xl p-3.5 border-2 border-emerald-500 shadow-sm space-y-2.5 transition animate-in fade-in">
-            <div class="flex items-start justify-between">
+          <div class="bg-white rounded-2xl p-5 border-2 border-emerald-500 shadow-sm space-y-3.5 transition animate-in fade-in">
+            <div class="flex items-start justify-between gap-2">
               <div>
-                <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Compatibilidad: 98%</span>
-                <h4 class="text-xs font-bold text-slate-800 mt-1">${matched.title}</h4>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">Compatibilidad: 98%</span>
+                <h4 class="text-sm lg:text-base font-extrabold text-slate-800 mt-1.5">${matched.title}</h4>
               </div>
-              <span class="text-xs font-bold text-slate-600">${matched.time}</span>
+              <span class="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg flex-shrink-0">${matched.time}</span>
             </div>
 
-            <div class="bg-slate-50 rounded-xl p-2.5 text-xs text-slate-600 space-y-1">
-              <p class="font-semibold text-slate-800">Usa lo que tienes:</p>
+            <div class="bg-slate-50 rounded-xl p-3.5 text-xs lg:text-sm text-slate-600 space-y-1.5">
+              <p class="font-bold text-slate-800">Usa lo que tienes:</p>
               ${matched.items.map(i => `<p>• ${i}</p>`).join('')}
             </div>
 
             <div class="flex items-center justify-between pt-1">
-              <span class="text-xs text-emerald-600 font-bold">Costo extra: $0.00 MXN</span>
-              <button onclick="openCustomRecipeModal('${matched.title}', '${matched.time}', '${matched.items.join('|')}', '${matched.steps.join('|')}')" class="text-xs font-bold text-emerald-700 underline">
-                Ver preparación
+              <span class="text-xs lg:text-sm text-emerald-600 font-extrabold">Costo extra: $0.00 MXN</span>
+              <button onclick="openCustomRecipeModal('${matched.title}', '${matched.time}', '${matched.items.join('|')}', '${matched.steps.join('|')}')" class="text-xs lg:text-sm font-bold bg-emerald-50 text-emerald-700 px-3.5 py-2 rounded-xl hover:bg-emerald-600 hover:text-white transition">
+                Ver preparación →
               </button>
             </div>
           </div>
         `;
-        playSound('success');
-        showToast('🍲 ¡Receta generada con tus sobras!', '✨');
-      }, 550);
+        if (!silent) {
+          playSound('success');
+          showToast('🍲 ¡Receta generada con tus sobras!', '✨');
+        }
+      }, delay);
     }
 
     // ================= SUPERMARKET & BUDGET =================
     function setGroceryFilter(filter, btn) {
       APP_STATE.groceryFilter = filter;
       document.querySelectorAll('.grocery-filter-btn').forEach(b => {
-        b.className = 'grocery-filter-btn bg-white border border-slate-200 text-slate-600 font-medium px-2.5 py-1 rounded-xl';
+        b.className = 'grocery-filter-btn bg-white border border-slate-200 text-slate-600 font-medium px-3.5 py-1.5 rounded-xl hover:border-emerald-300 transition';
       });
-      btn.className = 'grocery-filter-btn active bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-xl';
+      btn.className = 'grocery-filter-btn active bg-emerald-600 text-white font-bold px-3.5 py-1.5 rounded-xl transition';
       playSound('pop');
       renderGroceryList();
     }
@@ -1411,7 +1577,7 @@
         { key: 'pantry', label: '🌾 Alacena Básica' }
       ];
 
-      container.innerHTML = cats.map(c => {
+      const html = cats.map(c => {
         let items = APP_STATE.groceryItems.filter(i => i.cat === c.key);
         
         if (APP_STATE.groceryFilter === 'pending') {
@@ -1424,19 +1590,19 @@
         const subtotal = items.reduce((acc, i) => acc + i.price, 0);
 
         return `
-          <div class="bg-white rounded-2xl p-3 border border-slate-100 shadow-sm space-y-2">
-            <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
+          <div class="bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/70 shadow-sm space-y-3">
+            <h4 class="text-xs lg:text-sm font-bold text-slate-700 flex items-center justify-between pb-2 border-b border-slate-100">
               <span>${c.label}</span>
-              <span class="text-[10px] text-slate-400 font-normal">~$${subtotal} MXN</span>
+              <span class="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg font-bold">~$${subtotal} MXN</span>
             </h4>
-            <div class="space-y-1.5 text-xs">
+            <div class="space-y-2.5 text-xs lg:text-sm">
               ${items.map(item => `
                 <div class="flex items-center justify-between group">
-                  <label class="flex items-center space-x-2 cursor-pointer flex-1">
+                  <label class="flex items-center space-x-2.5 cursor-pointer flex-1">
                     <input type="checkbox" onchange="toggleGroceryItem('${item.id}', this)" ${item.checked ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600">
-                    <span class="text-slate-700 text-xs ${item.checked ? 'line-through text-slate-400' : ''}">${item.name} (~$${item.price})</span>
+                    <span class="text-slate-700 ${item.checked ? 'line-through text-slate-400' : ''}">${item.name} <span class="text-slate-400 text-xs">(~$${item.price})</span></span>
                   </label>
-                  <button onclick="deleteGroceryItem('${item.id}')" title="Eliminar" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 text-xs px-1">✕</button>
+                  <button onclick="deleteGroceryItem('${item.id}')" title="Eliminar" class="opacity-60 lg:opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 text-xs px-1.5 py-0.5 rounded transition">✕</button>
                 </div>
               `).join('')}
             </div>
@@ -1444,6 +1610,7 @@
         `;
       }).join('');
 
+      container.innerHTML = html || `<div class="md:col-span-2 bg-white rounded-2xl p-8 text-center text-sm text-slate-400 border border-slate-200/70">No hay productos en este filtro.</div>`;
       recalculateGroceryTotals();
     }
 
@@ -1541,9 +1708,9 @@
       const userBubble = document.createElement('div');
       userBubble.className = 'flex items-start justify-end space-x-2 animate-in fade-in';
       userBubble.innerHTML = `
-        <div class="bg-emerald-600 text-white text-xs p-2.5 rounded-2xl rounded-tr-sm max-w-[85%] leading-relaxed shadow-sm space-y-1">
+        <div class="bg-emerald-600 text-white text-xs lg:text-sm p-3 rounded-2xl rounded-tr-sm max-w-[85%] leading-relaxed shadow-sm space-y-1">
           <p>${query}</p>
-          <div class="flex items-center justify-end space-x-1 text-[9px] text-emerald-200">
+          <div class="flex items-center justify-end space-x-1 text-[10px] text-emerald-200">
             <span>${userTime}</span>
             <span id="${msgCheckId}" class="font-bold tracking-tighter">✓✓</span>
           </div>
@@ -1560,7 +1727,6 @@
         typing.classList.add('hidden');
         playSound('pop');
 
-        // Turn user checkmark to double blue check
         const checkEl = document.getElementById(msgCheckId);
         if (checkEl) {
           checkEl.className = 'font-bold tracking-tighter text-sky-300';
@@ -1581,14 +1747,14 @@
 
         const docTime = getCurrentTimeStr();
         const docBubble = document.createElement('div');
-        docBubble.className = 'flex items-start space-x-2 animate-in fade-in';
+        docBubble.className = 'flex items-start space-x-2.5 animate-in fade-in';
         docBubble.innerHTML = `
-          <div class="w-6 h-6 rounded-full bg-teal-100 text-teal-800 text-[10px] flex items-center justify-center font-bold flex-shrink-0">
+          <div class="w-7 h-7 rounded-full bg-teal-100 text-teal-800 text-[11px] flex items-center justify-center font-bold flex-shrink-0">
             SR
           </div>
-          <div class="bg-slate-100 text-slate-700 text-xs p-2.5 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed space-y-1">
+          <div class="bg-slate-100 text-slate-700 text-xs lg:text-sm p-3 rounded-2xl rounded-tl-sm max-w-[85%] leading-relaxed space-y-1">
             <p>${reply}</p>
-            <div class="text-[9px] text-slate-400 text-right">${docTime}</div>
+            <div class="text-[10px] text-slate-400 text-right">${docTime}</div>
           </div>
         `;
         container.appendChild(docBubble);
@@ -1661,7 +1827,6 @@
     let currentModalSteps = [];
     let currentGuideStepIndex = 0;
     let isGuideMode = false;
-
     let currentRecipeTimerTotal = 600;
 
     function openRecipeModal(key) {
@@ -1686,7 +1851,6 @@
       updateKitchenTimerDisplay();
       resetKitchenTimer();
 
-      // Ensure simple mode by default
       isGuideMode = false;
       document.getElementById('modalSimpleStepsBox').classList.remove('hidden');
       document.getElementById('modalGuideStepBox').classList.add('hidden');
@@ -1781,7 +1945,6 @@
       document.getElementById('kitchenTimerDisplay').innerText = 
         `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
-      // Update Circular SVG Ring
       const ring = document.getElementById('timerRingProgress');
       if (ring) {
         const total = currentRecipeTimerTotal || 600;
@@ -1800,13 +1963,13 @@
         clearInterval(kitchenTimerInterval);
         timerRunning = false;
         btn.innerText = 'Reanudar';
-        btn.className = 'bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+        btn.className = 'bg-amber-600 text-white text-xs px-3.5 py-2 rounded-xl font-bold';
         if (status) status.innerText = '⏸️ En pausa';
         playSound('pop');
       } else {
         timerRunning = true;
         btn.innerText = 'Pausar';
-        btn.className = 'bg-rose-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+        btn.className = 'bg-rose-600 text-white text-xs px-3.5 py-2 rounded-xl font-bold';
         if (status) status.innerText = '🔥 Cocinando a fuego medio...';
         playSound('pop');
         kitchenTimerInterval = setInterval(() => {
@@ -1817,7 +1980,7 @@
             clearInterval(kitchenTimerInterval);
             timerRunning = false;
             btn.innerText = '¡Listo!';
-            btn.className = 'bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold';
+            btn.className = 'bg-emerald-600 text-white text-xs px-3.5 py-2 rounded-xl font-bold';
             if (status) status.innerText = '✨ ¡Comida lista!';
             playSound('alert');
             triggerConfetti();
@@ -1834,7 +1997,7 @@
       const status = document.getElementById('timerStatusLabel');
       if (btn) {
         btn.innerText = 'Iniciar';
-        btn.className = 'bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition';
+        btn.className = 'bg-emerald-600 text-white text-xs px-3.5 py-2 rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition';
       }
       if (status) status.innerText = 'Listo para iniciar';
       kitchenTimerRemaining = currentRecipeTimerTotal || 600;
@@ -1898,21 +2061,21 @@
       const scoreBadge = isGreen ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white';
 
       area.innerHTML = `
-        <div class="p-3 rounded-2xl border ${colorBg} space-y-2 animate-in fade-in">
+        <div class="p-3.5 rounded-2xl border ${colorBg} space-y-2.5 animate-in fade-in">
           <div class="flex items-center justify-between">
-            <h4 class="font-bold text-xs">${prod.name}</h4>
-            <span class="text-xs font-black px-2 py-0.5 rounded-lg ${scoreBadge}">${prod.score} / 100</span>
+            <h4 class="font-bold text-xs sm:text-sm">${prod.name}</h4>
+            <span class="text-xs font-black px-2.5 py-0.5 rounded-lg ${scoreBadge}">${prod.score} / 100</span>
           </div>
 
-          <div class="flex flex-wrap gap-1">
-            ${prod.badges.map(b => `<span class="text-[9px] bg-white/80 border border-slate-200 px-1.5 py-0.5 rounded font-bold">${b}</span>`).join('')}
+          <div class="flex flex-wrap gap-1.5">
+            ${prod.badges.map(b => `<span class="text-[10px] bg-white/80 border border-slate-200 px-2 py-0.5 rounded-md font-bold">${b}</span>`).join('')}
           </div>
 
-          <p class="text-[11px] leading-relaxed text-slate-700">${prod.analysis}</p>
+          <p class="text-xs leading-relaxed text-slate-700">${prod.analysis}</p>
 
-          <div class="pt-1.5 border-t border-slate-200/60">
+          <div class="pt-2 border-t border-slate-200/60">
             <span class="text-[10px] font-bold uppercase tracking-wider block text-emerald-700">💡 Alternativa VIVE+:</span>
-            <p class="text-[11px] text-slate-800 font-medium">${prod.alternative}</p>
+            <p class="text-xs text-slate-800 font-medium mt-0.5">${prod.alternative}</p>
           </div>
         </div>
       `;
@@ -1921,7 +2084,7 @@
       else playSound('alert');
     }
 
-    // ================= IMPACT & SAVINGS MODAL =================
+    // ================= IMPACT & QR MODALS =================
     function openImpactModal() {
       playSound('pop');
       document.getElementById('impactModal').classList.remove('hidden');
@@ -1931,14 +2094,39 @@
       document.getElementById('impactModal').classList.add('hidden');
     }
 
+    function openQrModal() {
+      playSound('pop');
+      document.getElementById('qrModal').classList.remove('hidden');
+    }
+
+    function closeQrModal() {
+      document.getElementById('qrModal').classList.add('hidden');
+    }
+
+    // Close modals with Escape key (Desktop friendly)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeRecipeModal();
+        closeScannerModal();
+        closeImpactModal();
+        closeQrModal();
+      }
+    });
+
     // ================= INITIAL STARTUP =================
     window.addEventListener('DOMContentLoaded', () => {
       loadSavedState();
+      // Sync budget slider & labels with saved state
+      const range = document.getElementById('budgetRange');
+      if (range) range.value = APP_STATE.budget;
+      document.getElementById('budgetValueLabel').innerText = `$${APP_STATE.budget} MXN`;
+      document.getElementById('menuBudgetSubtitle').innerText = `$${APP_STATE.budget}/sem`;
+
       renderWaterUI();
-      updateMealsProgressUI();
+      updateMealsProgressUI(false);
       renderWeeklyDay('mie');
       renderGroceryList();
-      generateRefriRecipe();
+      generateRefriRecipe(true);
     });
   </script>
 </body>
